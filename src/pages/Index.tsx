@@ -40,7 +40,11 @@ const Index = () => {
                 Ganhe SUOR fazendo exercícios e resgate benefícios incríveis na cidade!
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-primary hover:bg-white/90 font-semibold"
+                  onClick={() => window.location.href = '/activity/start'}
+                >
                   <Play className="mr-2 h-5 w-5" />
                   Começar Agora
                 </Button>
