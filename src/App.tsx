@@ -16,6 +16,12 @@ import Events from "./pages/admin/Events";
 import Suor from "./pages/admin/Suor";
 import Challenges from "./pages/admin/Challenges";
 import Partners from "./pages/admin/Partners";
+import Welcome from "./pages/Welcome";
+import Login from "./pages/onboarding/Login";
+import Signup from "./pages/onboarding/Signup";
+import ForgotPassword from "./pages/onboarding/ForgotPassword";
+import ProfileSetup from "./pages/onboarding/ProfileSetup";
+import Integrations from "./pages/onboarding/Integrations";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +32,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Onboarding Routes */}
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/onboarding/login" element={<Login />} />
+          <Route path="/onboarding/signup" element={<Signup />} />
+          <Route path="/onboarding/forgot-password" element={<ForgotPassword />} />
+          <Route path="/onboarding/profile-setup" element={<ProfileSetup />} />
+          <Route path="/onboarding/integrations" element={<Integrations />} />
+          
+          {/* Main App Routes */}
           <Route path="/" element={<Index />} />
           <Route path="/activity/start" element={<ActivityStart />} />
           <Route path="/activity/:activityType/tracking" element={<ActivityTracking />} />
