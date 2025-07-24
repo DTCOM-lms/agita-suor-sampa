@@ -19,20 +19,20 @@ const StatsCard = ({ title, value, change, icon, trend }: StatsCardProps) => {
   };
 
   return (
-    <Card className="card-agita">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="card-agita touch-manipulation">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 md:px-6 pt-3 md:pt-6">
+        <CardTitle className="text-xs md:text-sm font-medium text-muted-foreground truncate pr-2">
           {title}
         </CardTitle>
-        <div className="p-2 rounded-lg bg-primary/10">
+        <div className="p-1.5 md:p-2 rounded-lg bg-primary/10 flex-shrink-0">
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        <div className={`text-xs flex items-center gap-1 mt-1 ${getTrendColor()}`}>
-          <TrendingUp className="h-3 w-3" />
-          {change}
+      <CardContent className="px-3 md:px-6 pb-3 md:pb-6">
+        <div className="text-xl md:text-2xl font-bold leading-none mb-1">{value}</div>
+        <div className={`text-xs flex items-center gap-1 ${getTrendColor()}`}>
+          <TrendingUp className="h-3 w-3 flex-shrink-0" />
+          <span className="truncate">{change}</span>
         </div>
       </CardContent>
     </Card>

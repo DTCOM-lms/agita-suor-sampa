@@ -3,30 +3,80 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema, type SignupInput } from "@/lib/validations";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signUp, signInWithProvider } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate signup
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/onboarding/profile-setup");
-    }, 1500);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    watch,
+  } = useForm<SignupInput>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      acceptTerms: false,
+    },
+  });
+
+  const watchPassword = watch("password");
+
+  const onSubmit = async (data: SignupInput) => {
+    try {
+      const { user, error } = await signUp(data.email, data.password, data.fullName);
+      
+      if (error) {
+        // Set form errors based on the type of error
+        if (error.message.includes('User already registered')) {
+          setError("email", { message: "Este email já está cadastrado. Tente fazer login." });
+        } else if (error.message.includes('Password should be at least')) {
+          setError("password", { message: "A senha deve ter pelo menos 6 caracteres." });
+        } else if (error.message.includes('invalid format')) {
+          setError("email", { message: "Formato de email inválido." });
+        } else {
+          setError("root", { message: error.message });
+        }
+        return;
+      }
+
+      if (user) {
+        // If user was created and confirmed immediately, go to profile setup
+        if (user.email_confirmed_at) {
+          navigate("/onboarding/profile-setup");
+        } else {
+          // If email confirmation is required, show success message
+          // User will be redirected to profile setup after email confirmation
+          navigate("/onboarding/login");
+        }
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      setError("root", { message: "Erro inesperado. Tente novamente." });
+    }
   };
 
-  const handleSocialSignup = (provider: string) => {
-    console.log(`Signup with ${provider}`);
-    // Implementar cadastro social
+  const handleSocialSignup = async (provider: 'google' | 'facebook' | 'apple') => {
+    try {
+      await signInWithProvider(provider);
+    } catch (error) {
+      console.error(`${provider} signup error:`, error);
+    }
   };
 
   return (
@@ -35,7 +85,7 @@ const Signup = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Link to="/welcome">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full btn-mobile">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
@@ -56,8 +106,9 @@ const Signup = () => {
             <div className="space-y-3">
               <Button
                 variant="outline"
-                className="w-full h-11"
+                className="w-full h-11 btn-mobile"
                 onClick={() => handleSocialSignup("google")}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -70,8 +121,9 @@ const Signup = () => {
 
               <Button
                 variant="outline"
-                className="w-full h-11"
+                className="w-full h-11 btn-mobile"
                 onClick={() => handleSocialSignup("apple")}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -90,19 +142,29 @@ const Signup = () => {
             </div>
 
             {/* Email Signup Form */}
-            <form onSubmit={handleSignup} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {errors.root && (
+                <div className="text-sm text-destructive text-center p-2 bg-destructive/10 rounded">
+                  {errors.root.message}
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
+                <Label htmlFor="fullName">Nome completo</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="name"
+                    {...register("fullName")}
+                    id="fullName"
                     type="text"
                     placeholder="Seu nome completo"
-                    className="pl-10"
-                    required
+                    className={`pl-10 btn-mobile ${errors.fullName ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                 </div>
+                {errors.fullName && (
+                  <p className="text-sm text-destructive">{errors.fullName.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -110,13 +172,17 @@ const Signup = () => {
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
+                    {...register("email")}
                     id="email"
                     type="email"
                     placeholder="seu@email.com"
-                    className="pl-10"
-                    required
+                    className={`pl-10 btn-mobile ${errors.email ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -124,21 +190,25 @@ const Signup = () => {
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
+                    {...register("password")}
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 8 caracteres"
-                    className="pl-10 pr-10"
-                    required
-                    minLength={8}
+                    placeholder="Mínimo 6 caracteres"
+                    className={`pl-10 pr-10 btn-mobile ${errors.password ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    disabled={isSubmitting}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -146,25 +216,35 @@ const Signup = () => {
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
+                    {...register("confirmPassword")}
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirme sua senha"
-                    className="pl-10 pr-10"
-                    required
+                    className={`pl-10 pr-10 btn-mobile ${errors.confirmPassword ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    disabled={isSubmitting}
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                )}
               </div>
 
               <div className="flex items-start space-x-2">
-                <input type="checkbox" id="terms" className="rounded mt-1" required />
-                <Label htmlFor="terms" className="text-sm leading-5">
+                <Checkbox 
+                  {...register("acceptTerms")}
+                  id="acceptTerms" 
+                  className="mt-1"
+                  disabled={isSubmitting}
+                />
+                <Label htmlFor="acceptTerms" className="text-sm leading-5">
                   Eu concordo com os{" "}
                   <Link to="/terms" className="text-primary hover:underline">
                     Termos de Uso
@@ -175,9 +255,16 @@ const Signup = () => {
                   </Link>
                 </Label>
               </div>
+              {errors.acceptTerms && (
+                <p className="text-sm text-destructive">{errors.acceptTerms.message}</p>
+              )}
 
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                {isLoading ? "Criando conta..." : "Criar Conta"}
+              <Button 
+                type="submit" 
+                className="w-full h-11 btn-mobile" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Criando conta..." : "Criar Conta"}
               </Button>
             </form>
 

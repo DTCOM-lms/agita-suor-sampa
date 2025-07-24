@@ -3,29 +3,70 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginInput } from "@/lib/validations";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn, signInWithProvider } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate login
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/");
-    }, 1500);
+  const from = location.state?.from?.pathname || "/";
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const onSubmit = async (data: LoginInput) => {
+    try {
+      const { user, error } = await signIn(data.email, data.password);
+      
+      if (error) {
+        // Set form errors based on the type of error
+        if (error.message.includes('Invalid login credentials')) {
+          setError("email", { message: "Email ou senha incorretos" });
+          setError("password", { message: "Email ou senha incorretos" });
+        } else if (error.message.includes('Email not confirmed')) {
+          setError("email", { message: "Email não confirmado. Verifique sua caixa de entrada." });
+        } else {
+          setError("root", { message: error.message });
+        }
+        return;
+      }
+
+      if (user) {
+        // Redirect to the page they were trying to access or home
+        navigate(from, { replace: true });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError("root", { message: "Erro inesperado. Tente novamente." });
+    }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-    // Implementar login social
+  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
+    try {
+      await signInWithProvider(provider);
+    } catch (error) {
+      console.error(`${provider} login error:`, error);
+    }
   };
 
   return (
@@ -34,7 +75,7 @@ const Login = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <Link to="/welcome">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full btn-mobile">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
@@ -55,8 +96,9 @@ const Login = () => {
             <div className="space-y-3">
               <Button
                 variant="outline"
-                className="w-full h-11"
+                className="w-full h-11 btn-mobile"
                 onClick={() => handleSocialLogin("google")}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -69,8 +111,9 @@ const Login = () => {
 
               <Button
                 variant="outline"
-                className="w-full h-11"
+                className="w-full h-11 btn-mobile"
                 onClick={() => handleSocialLogin("apple")}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -80,8 +123,9 @@ const Login = () => {
 
               <Button
                 variant="outline"
-                className="w-full h-11"
+                className="w-full h-11 btn-mobile"
                 onClick={() => handleSocialLogin("facebook")}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -100,19 +144,29 @@ const Login = () => {
             </div>
 
             {/* Email Login Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {errors.root && (
+                <div className="text-sm text-destructive text-center p-2 bg-destructive/10 rounded">
+                  {errors.root.message}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
+                    {...register("email")}
                     id="email"
                     type="email"
                     placeholder="seu@email.com"
-                    className="pl-10"
-                    required
+                    className={`pl-10 btn-mobile ${errors.email ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -120,36 +174,52 @@ const Login = () => {
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
+                    {...register("password")}
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Sua senha"
-                    className="pl-10 pr-10"
-                    required
+                    className={`pl-10 pr-10 btn-mobile ${errors.password ? 'border-destructive' : ''}`}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    disabled={isSubmitting}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <input type="checkbox" id="remember" className="rounded" />
-                  <Label htmlFor="remember" className="text-sm">
+                  <Checkbox 
+                    {...register("rememberMe")}
+                    id="rememberMe" 
+                    disabled={isSubmitting}
+                  />
+                  <Label htmlFor="rememberMe" className="text-sm">
                     Lembrar de mim
                   </Label>
                 </div>
-                <Link to="/onboarding/forgot-password" className="text-sm text-primary hover:underline">
+                <Link 
+                  to="/onboarding/forgot-password" 
+                  className="text-sm text-primary hover:underline"
+                >
                   Esqueci a senha
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full h-11" disabled={isLoading}>
-                {isLoading ? "Entrando..." : "Entrar"}
+              <Button 
+                type="submit" 
+                className="w-full h-11 btn-mobile" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Entrando..." : "Entrar"}
               </Button>
             </form>
 

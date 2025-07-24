@@ -25,12 +25,12 @@ const ChallengeCard = ({
   isActive = false 
 }: ChallengeCardProps) => {
   return (
-    <Card className={`card-agita group ${isActive ? 'ring-2 ring-primary' : ''}`}>
-      <CardHeader>
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" />
-            <span className={`px-2 py-1 rounded-full text-xs ${
+    <Card className={`card-agita group touch-manipulation ${isActive ? 'ring-2 ring-primary' : ''}`}>
+      <CardHeader className="px-4 md:px-6">
+        <div className="flex items-start justify-between mb-2 gap-2">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Trophy className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0" />
+            <span className={`px-2 py-1 rounded-full text-xs flex-shrink-0 ${
               type === "coletivo" 
                 ? "bg-secondary text-secondary-foreground" 
                 : "bg-accent text-accent-foreground"
@@ -38,17 +38,18 @@ const ChallengeCard = ({
               {type === "coletivo" ? "Coletivo" : "Individual"}
             </span>
           </div>
-          <div className="suor-coin">
-            <Trophy className="h-4 w-4" />
-            {reward} SUOR
+          <div className="suor-coin flex-shrink-0">
+            <Trophy className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden xs:inline">{reward} SUOR</span>
+            <span className="xs:hidden">{reward}</span>
           </div>
         </div>
-        <CardTitle className="text-lg leading-tight">{title}</CardTitle>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <CardTitle className="text-base md:text-lg leading-tight pr-2">{title}</CardTitle>
+        <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
       </CardHeader>
       
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="px-4 md:px-6">
+        <div className="space-y-3 md:space-y-4">
           {/* Progress */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -59,26 +60,27 @@ const ChallengeCard = ({
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <Users2 className="h-4 w-4" />
-                <span>{participants} participando</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                <span>{timeLeft}</span>
-              </div>
+          <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 text-xs md:text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Users2 className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+              <span className="truncate">
+                <span className="xs:hidden">{participants}</span>
+                <span className="hidden xs:inline">{participants} participando</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+              <span>{timeLeft}</span>
             </div>
           </div>
 
           {/* Action */}
           <Button 
-            className="w-full group-hover:bg-primary-glow transition-colors" 
+            className="w-full group-hover:bg-primary-glow transition-colors btn-mobile" 
             variant={isActive ? "default" : "outline"}
           >
             {isActive ? "Continuar" : "Participar"}
-            <ChevronRight className="h-4 w-4 ml-1" />
+            <ChevronRight className="h-3 w-3 md:h-4 md:w-4 ml-1" />
           </Button>
         </div>
       </CardContent>

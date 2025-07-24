@@ -4,23 +4,91 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, ArrowLeft, ArrowRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Camera, ArrowLeft, ArrowRight, Upload, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileStep1Schema, type ProfileStep1Input } from "@/lib/validations";
+import { useAuth } from "@/contexts/AuthContext";
+import { useImageUpload } from "@/hooks/useImageUpload";
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
+  const { user, updateProfile } = useAuth();
+  const { uploadImage, uploading, uploadProgress } = useImageUpload({ bucket: 'avatars' });
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>(user?.user_metadata?.avatar_url || "");
 
-  const handleNext = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+    setError,
+  } = useForm<ProfileStep1Input>({
+    resolver: zodResolver(profileStep1Schema),
+    defaultValues: {
+      displayName: user?.user_metadata?.full_name || "",
+      bio: user?.user_metadata?.bio || "",
+      avatarUrl: user?.user_metadata?.avatar_url || "",
+    },
+  });
+
+  const watchDisplayName = watch("displayName");
+  const watchBio = watch("bio");
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    try {
+      const uploadedUrl = await uploadImage(file, user.id);
+      if (uploadedUrl) {
+        setAvatarUrl(uploadedUrl);
+        setValue("avatarUrl", uploadedUrl);
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+    }
+  };
+
+  const handleNext = async () => {
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     } else {
-      setIsLoading(true);
-      setTimeout(() => {
+      // Final step - save profile and go to integrations
+      const formData = {
+        displayName: watchDisplayName,
+        bio: watchBio,
+        avatarUrl: avatarUrl,
+      };
+
+      try {
+        const { error } = await updateProfile({
+          full_name: formData.displayName,
+          bio: formData.bio,
+          avatar_url: formData.avatarUrl,
+          profile_completed: true,
+        });
+
+        if (error) {
+          setError("root", { message: error.message });
+          return;
+        }
+
         navigate("/onboarding/integrations");
-      }, 1000);
+      } catch (error) {
+        console.error('Profile update error:', error);
+        setError("root", { message: "Erro ao salvar perfil. Tente novamente." });
+      }
     }
   };
 
@@ -30,28 +98,87 @@ const ProfileSetup = () => {
     }
   };
 
+  const onSubmit = async (data: ProfileStep1Input) => {
+    // This handles the form submission for step 1
+    handleNext();
+  };
+
+  const removeAvatar = () => {
+    setAvatarUrl("");
+    setValue("avatarUrl", "");
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {errors.root && (
+              <div className="text-sm text-destructive text-center p-2 bg-destructive/10 rounded">
+                {errors.root.message}
+              </div>
+            )}
+
             <div className="text-center space-y-4">
               <div className="relative mx-auto w-24 h-24">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="text-2xl bg-primary/10">👤</AvatarFallback>
+                  <AvatarImage src={avatarUrl} />
+                  <AvatarFallback className="text-2xl bg-primary/10">
+                    {watchDisplayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || '👤'}
+                  </AvatarFallback>
                 </Avatar>
-                <Button
-                  size="icon"
-                  className="absolute -bottom-1 -right-1 rounded-full w-8 h-8"
-                  variant="secondary"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
+                
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                    <div className="text-white text-xs">
+                      {uploadProgress}%
+                    </div>
+                  </div>
+                )}
+
+                <div className="absolute -bottom-1 -right-1 flex gap-1">
+                  <Button
+                    type="button"
+                    size="icon"
+                    className="rounded-full w-8 h-8 bg-primary"
+                    onClick={handleAvatarClick}
+                    disabled={uploading}
+                  >
+                    {uploading ? <Upload className="h-3 w-3 animate-spin" /> : <Camera className="h-3 w-3" />}
+                  </Button>
+                  
+                  {avatarUrl && (
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="rounded-full w-8 h-8"
+                      onClick={removeAvatar}
+                      disabled={uploading}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                  disabled={uploading}
+                />
               </div>
+              
               <div>
                 <h2 className="text-xl font-semibold">Adicione uma foto</h2>
                 <p className="text-muted-foreground">Personalize seu perfil com uma foto</p>
+                {uploading && (
+                  <div className="mt-2">
+                    <Progress value={uploadProgress} className="h-2" />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -59,79 +186,81 @@ const ProfileSetup = () => {
               <div className="space-y-2">
                 <Label htmlFor="displayName">Nome de exibição</Label>
                 <Input
+                  {...register("displayName")}
                   id="displayName"
                   placeholder="Como você gostaria de ser chamado?"
-                  defaultValue="João Silva"
+                  className={`btn-mobile ${errors.displayName ? 'border-destructive' : ''}`}
+                  disabled={isSubmitting}
                 />
+                {errors.displayName && (
+                  <p className="text-sm text-destructive">{errors.displayName.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="bio">Bio (opcional)</Label>
                 <Input
+                  {...register("bio")}
                   id="bio"
                   placeholder="Conte um pouco sobre você..."
                   maxLength={150}
+                  className="btn-mobile"
+                  disabled={isSubmitting}
                 />
-                <p className="text-xs text-muted-foreground">0/150 caracteres</p>
+                <p className="text-xs text-muted-foreground">
+                  {watchBio?.length || 0}/150 caracteres
+                </p>
+                {errors.bio && (
+                  <p className="text-sm text-destructive">{errors.bio.message}</p>
+                )}
               </div>
             </div>
-          </div>
+          </form>
         );
 
       case 2:
         return (
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-semibold">Informações pessoais</h2>
-              <p className="text-muted-foreground">Ajude-nos a personalizar sua experiência</p>
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-secondary/10 rounded-full mx-auto flex items-center justify-center">
+                <span className="text-2xl">📊</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">Informações básicas</h2>
+                <p className="text-muted-foreground">Nos ajude a personalizar sua experiência</p>
+              </div>
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="age">Idade</Label>
-                  <Input id="age" type="number" placeholder="25" min="13" max="120" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="weight">Peso (kg)</Label>
-                  <Input id="weight" type="number" placeholder="70" min="30" max="300" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="height">Altura (cm)</Label>
-                  <Input id="height" type="number" placeholder="175" min="100" max="250" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Gênero</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Masculino</SelectItem>
-                      <SelectItem value="female">Feminino</SelectItem>
-                      <SelectItem value="other">Outro</SelectItem>
-                      <SelectItem value="prefer-not-to-say">Prefiro não dizer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label>Data de nascimento</Label>
+                <Input type="date" className="btn-mobile" />
               </div>
 
               <div className="space-y-2">
-                <Label>Nível de atividade</Label>
+                <Label>Gênero</Label>
                 <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione seu nível" />
+                  <SelectTrigger className="btn-mobile">
+                    <SelectValue placeholder="Selecione seu gênero" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="beginner">Iniciante</SelectItem>
-                    <SelectItem value="intermediate">Intermediário</SelectItem>
-                    <SelectItem value="advanced">Avançado</SelectItem>
-                    <SelectItem value="athlete">Atleta</SelectItem>
+                    <SelectItem value="male">Masculino</SelectItem>
+                    <SelectItem value="female">Feminino</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                    <SelectItem value="prefer_not_to_say">Prefiro não dizer</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Altura (cm)</Label>
+                  <Input type="number" placeholder="170" className="btn-mobile" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Peso (kg)</Label>
+                  <Input type="number" placeholder="70" className="btn-mobile" />
+                </div>
               </div>
             </div>
           </div>
@@ -140,37 +269,47 @@ const ProfileSetup = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-semibold">Seus objetivos</h2>
-              <p className="text-muted-foreground">O que você quer alcançar?</p>
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-accent/10 rounded-full mx-auto flex items-center justify-center">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">Seus objetivos</h2>
+                <p className="text-muted-foreground">O que você espera alcançar?</p>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              {[
-                { id: "weight-loss", label: "Perder peso", emoji: "⚖️" },
-                { id: "muscle-gain", label: "Ganhar músculo", emoji: "💪" },
-                { id: "endurance", label: "Melhorar resistência", emoji: "🏃" },
-                { id: "health", label: "Melhorar saúde geral", emoji: "❤️" },
-                { id: "performance", label: "Performance esportiva", emoji: "🏆" },
-                { id: "habit", label: "Criar hábitos saudáveis", emoji: "✅" },
-              ].map((goal) => (
-                <label
-                  key={goal.id}
-                  className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:bg-accent/50 cursor-pointer transition-colors"
-                >
-                  <input type="checkbox" className="rounded" />
-                  <span className="text-2xl">{goal.emoji}</span>
-                  <span className="font-medium">{goal.label}</span>
-                </label>
-              ))}
-            </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Nível de condicionamento</Label>
+                <Select>
+                  <SelectTrigger className="btn-mobile">
+                    <SelectValue placeholder="Selecione seu nível" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Iniciante</SelectItem>
+                    <SelectItem value="intermediate">Intermediário</SelectItem>
+                    <SelectItem value="advanced">Avançado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="target">Meta específica (opcional)</Label>
-              <Input
-                id="target"
-                placeholder="Ex: Correr 5km em menos de 25 minutos"
-              />
+              <div className="space-y-3">
+                <Label>Objetivos principais</Label>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { id: "weight_loss", label: "Perder peso" },
+                    { id: "muscle_gain", label: "Ganhar massa muscular" },
+                    { id: "endurance", label: "Melhorar resistência" },
+                    { id: "general_health", label: "Saúde geral" }
+                  ].map((goal) => (
+                    <label key={goal.id} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-muted/50 cursor-pointer">
+                      <input type="checkbox" className="rounded" />
+                      <span>{goal.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -188,8 +327,9 @@ const ProfileSetup = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full btn-mobile"
             onClick={currentStep === 1 ? () => navigate("/onboarding/signup") : handleBack}
+            disabled={uploading}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -221,21 +361,25 @@ const ProfileSetup = () => {
         </Card>
 
         {/* Navigation */}
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="flex-1"
-            onClick={() => navigate("/onboarding/integrations")}
+        <div className="flex gap-4">
+          {currentStep > 1 && (
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              className="flex-1 btn-mobile"
+              disabled={uploading || isSubmitting}
+            >
+              Voltar
+            </Button>
+          )}
+          
+          <Button 
+            onClick={currentStep === 1 ? handleSubmit(onSubmit) : handleNext}
+            className="flex-1 btn-mobile"
+            disabled={uploading || isSubmitting}
           >
-            Pular
-          </Button>
-          <Button
-            className="flex-1"
-            onClick={handleNext}
-            disabled={isLoading}
-          >
-            {isLoading ? "Salvando..." : currentStep === 3 ? "Finalizar" : "Próximo"}
-            {!isLoading && <ArrowRight className="h-4 w-4 ml-2" />}
+            {uploading ? "Enviando..." : isSubmitting ? "Salvando..." : currentStep === 3 ? "Finalizar" : "Continuar"}
+            {!uploading && !isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
           </Button>
         </div>
       </div>
