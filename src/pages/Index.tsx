@@ -1,46 +1,344 @@
 import { useAuth } from '@/contexts/AuthContext';
-import Header from "@/components/Header";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import MainMap from "@/components/MainMap";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Trophy, Target, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  Play, 
+  Trophy, 
+  Target, 
+  Zap, 
+  MapPin, 
+  Clock, 
+  Route,
+  TrendingUp,
+  Activity,
+  Bell,
+  Search,
+  Flame,
+  Calendar,
+  Users
+} from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { useSocialFeed } from '@/hooks/useSocialFeed';
+import { useUserActivities } from '@/hooks/useActivities';
+import { useActivityTypes } from '@/hooks/useActivityTypes';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User, LogOut } from 'lucide-react';
 
 const Index = () => {
-  const { profile, loading } = useAuth();
+  const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { data: socialFeed } = useSocialFeed(5);
+  const { data: recentActivities } = useUserActivities(3);
+  const { data: activityTypes } = useActivityTypes();
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/welcome");
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
+  const getUserInitials = () => {
+    const name = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User';
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
+  };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      
-      {/* Área do mapa */}
-      <main className="flex-1 relative" style={{ minHeight: '400px' }}>
-        <MainMap className="absolute inset-0 h-full w-full" />
-      </main>
-
-      {/* Card de boas-vindas */}
-      <Card className="mx-4 my-4 bg-white/95 shadow-lg">
-        <CardContent className="p-4">
+    <div className="min-h-screen bg-background">
+      {/* Header Compacto */}
+      <header className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground">
+        <div className="px-4 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold">
-                Olá, {profile?.full_name?.split(' ')[0] || 'Atleta'}! 👋
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {Math.round(profile?.current_suor || 0)} SUOR disponíveis
-              </p>
+            {/* User Info */}
+            <div className="flex items-center gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 hover:bg-white/10 rounded-lg p-1 transition-colors">
+                    <Avatar className="h-10 w-10 border-2 border-white/20">
+                      <AvatarImage src={profile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture} />
+                      <AvatarFallback className="bg-white/20 text-white font-semibold">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-left">
+                      <p className="text-sm opacity-90">{getGreeting()}</p>
+                      <h1 className="font-semibold">
+                        {(profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Atleta').split(' ')[0]}
+                      </h1>
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-64 mt-2" align="start" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuário'}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user?.email}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2 pt-2 border-t">
+                        <div className="flex items-center gap-1 text-xs">
+                          <Zap className="h-3 w-3 text-yellow-500" />
+                          <span className="font-medium">{Math.round(profile?.current_suor || 0)} SUOR</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs">
+                          <Trophy className="h-3 w-3 text-blue-500" />
+                          <span className="font-medium">Nv. {profile?.level || 1}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => navigate('/profile')}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Meu Perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="cursor-pointer"
+                    onClick={() => navigate('/achievements')}
+                  >
+                    <Trophy className="mr-2 h-4 w-4" />
+                    <span>Conquistas</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sair</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <Button size="sm" onClick={() => navigate('/activity/start')}>
-              <Play className="mr-2 h-4 w-4" />
-              Ativar
-            </Button>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-white hover:bg-white/20">
+                <Search className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-white hover:bg-white/20 relative">
+                <Bell className="h-4 w-4" />
+                <div className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full animate-pulse" />
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Stats Row */}
+          <div className="flex items-center gap-4 mt-3 text-sm">
+            <div className="flex items-center gap-1">
+              <Zap className="h-4 w-4" />
+              <span className="font-medium">{Math.round(profile?.current_suor || 0)}</span>
+              <span className="opacity-75">SUOR</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Trophy className="h-4 w-4" />
+              <span className="font-medium">Nv. {profile?.level || 1}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Flame className="h-4 w-4" />
+              <span className="font-medium">{profile?.streak_days || 0}</span>
+              <span className="opacity-75">dias</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 pb-20">
+        {/* Stats Cards */}
+        <div className="px-4 py-6 mt-4">
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="stats-blue border-blue-200 card-hover animate-slide-up">
+              <CardContent className="p-3 text-center">
+                <Activity className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+                <p className="text-xs text-blue-600/70">Atividades</p>
+                <p className="text-lg font-bold text-blue-700">{profile?.total_activities || 0}</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="stats-green border-green-200 card-hover animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              <CardContent className="p-3 text-center">
+                <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
+                <p className="text-xs text-green-600/70">Distância</p>
+                <p className="text-lg font-bold text-green-700">
+                  {(profile?.total_distance_km || 0).toFixed(1)}km
+                </p>
+              </CardContent>
+            </Card>
+            
+            <Card className="stats-purple border-purple-200 card-hover animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <CardContent className="p-3 text-center">
+                <Clock className="h-5 w-5 text-purple-600 mx-auto mb-1" />
+                <p className="text-xs text-purple-600/70">Tempo</p>
+                <p className="text-lg font-bold text-purple-700">
+                  {Math.round((profile?.total_duration_minutes || 0) / 60)}h
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="px-4 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Explore São Paulo</h2>
+            <Badge variant="secondary" className="text-xs">
+              <MapPin className="h-3 w-3 mr-1" />
+              3 desafios próximos
+            </Badge>
+          </div>
+          <Card className="overflow-hidden card-hover">
+            <div className="h-80 relative">
+              <MainMap className="absolute inset-0 h-full w-full" />
+              <div className="absolute top-3 right-3">
+                <Button size="sm" variant="secondary" className="h-8 glass">
+                  <Target className="h-4 w-4 mr-1" />
+                  Ver rotas
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Activity Types Section */}
+        <div className="px-4 mb-4">
+          <h2 className="text-lg font-semibold mb-3">Atividades Populares</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {activityTypes?.slice(0, 5).map((type) => (
+              <Card 
+                key={type.id} 
+                className="min-w-[120px] cursor-pointer card-hover"
+                onClick={() => navigate('/activity/start')}
+              >
+                <CardContent className="p-3 text-center">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Activity className="h-4 w-4 text-primary" />
+                  </div>
+                  <p className="text-sm font-medium">{type.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {type.base_suor_per_minute} SUOR/min
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Activities */}
+        {recentActivities && recentActivities.length > 0 && (
+          <div className="px-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold">Atividades Recentes</h2>
+              <Button variant="ghost" size="sm" className="text-primary">
+                Ver todas
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {recentActivities.map((activity) => (
+                <Card key={activity.id} className="card-hover animate-slide-up">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary/10 to-primary/20 rounded-full flex items-center justify-center">
+                          <Activity className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{activity.title}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {activity.created_at && format(new Date(activity.created_at), 'dd MMM, HH:mm', { locale: ptBR })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-primary">{activity.suor_earned} SUOR</p>
+                        <p className="text-sm text-muted-foreground">
+                          {activity.distance_km ? `${activity.distance_km}km` : `${activity.duration_minutes}min`}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Social Feed Preview */}
+        {socialFeed && socialFeed.length > 0 && (
+          <div className="px-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold">Feed da Comunidade</h2>
+              <Button variant="ghost" size="sm" className="text-primary">
+                <Users className="h-4 w-4 mr-1" />
+                Ver feed
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {socialFeed.slice(0, 2).map((post) => (
+                <Card key={post.id} className="card-hover animate-slide-up">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-8 w-8 ring-2 ring-primary/20">
+                        <AvatarImage src={post.profiles?.avatar_url} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/20 text-primary font-semibold">
+                          {post.profiles?.full_name?.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{post.profiles?.full_name}</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {post.post_type === 'activity_completed' && 'completou uma atividade'}
+                          {post.post_type === 'achievement_unlocked' && 'desbloqueou uma conquista'}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            ❤️ {post.likes_count}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            💬 {post.comments_count}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
 
       <MobileBottomNav />
     </div>

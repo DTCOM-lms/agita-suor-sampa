@@ -70,12 +70,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Função para criar profile mockado baseado no usuário
   const createMockProfile = (user: User): Profile => {
+    const userMetadata = user.user_metadata || {};
+    
+    // Extrair nome completo de diferentes possíveis campos
+    const fullName = userMetadata.full_name || 
+                    userMetadata.name || 
+                    `${userMetadata.given_name || ''} ${userMetadata.family_name || ''}`.trim() ||
+                    user.email?.split('@')[0] || 
+                    'Usuário';
+
+    // Extrair avatar de diferentes possíveis campos
+    const avatarUrl = userMetadata.avatar_url || 
+                     userMetadata.picture || 
+                     userMetadata.photo ||
+                     undefined;
+
+    console.log('👤 createMockProfile: Dados do usuário OAuth:', {
+      fullName,
+      avatarUrl,
+      email: user.email,
+      userMetadata
+    });
+
     return {
       id: user.id,
-      full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Atleta',
-      avatar_url: user.user_metadata?.avatar_url,
-      city: 'São Paulo',
+      username: user.email?.split('@')[0],
+      full_name: fullName,
+      avatar_url: avatarUrl,
+      bio: 'Novo atleta no Agita!',
+      birth_date: undefined,
+      gender: undefined,
+      height_cm: undefined,
+      weight_kg: undefined,
       fitness_level: 'beginner',
+      city: 'São Paulo',
+      neighborhood: undefined,
       level: 1,
       experience_points: 0,
       total_suor: 250,
@@ -85,9 +114,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       total_duration_minutes: 180,
       streak_days: 3,
       longest_streak: 7,
+      last_activity_date: undefined,
       is_public: true,
       allow_friend_requests: true,
-      notification_preferences: {},
+      notification_preferences: {
+        achievements: true,
+        social: true,
+        activities: true
+      },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -99,9 +133,92 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
     
-    // Por enquanto usar dados mockados
-    // TODO: Implementar busca real quando a tabela profiles estiver configurada
-    setProfile(createMockProfile(user));
+    try {
+      console.log('👤 AuthContext: Buscando perfil real do usuário:', user.id);
+      
+      // Buscar perfil real do Supabase
+      const { data: profileData, error } = await (supabase as any)
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('❌ Erro ao buscar perfil:', error);
+        
+        // Se o perfil não existe, criar um baseado nos dados do usuário
+        if (error.code === 'PGRST116') {
+          console.log('📝 AuthContext: Perfil não encontrado, criando perfil básico...');
+          
+          const userMetadata = user.user_metadata || {};
+          const fullName = userMetadata.full_name || 
+                          userMetadata.name || 
+                          `${userMetadata.given_name || ''} ${userMetadata.family_name || ''}`.trim() ||
+                          user.email?.split('@')[0] || 
+                          'Usuário';
+          
+          const avatarUrl = userMetadata.avatar_url || 
+                           userMetadata.picture || 
+                           userMetadata.photo ||
+                           undefined;
+
+          console.log('📝 AuthContext: Criando perfil com dados:', { fullName, avatarUrl, userMetadata });
+          
+          // Tentar criar um perfil básico
+          const { data: newProfile, error: createError } = await (supabase as any)
+            .from('profiles')
+            .insert({
+              id: user.id,
+              full_name: fullName,
+              avatar_url: avatarUrl,
+              city: 'São Paulo',
+              fitness_level: 'beginner',
+              level: 1,
+              experience_points: 0,
+              total_suor: 100,
+              current_suor: 100,
+              total_activities: 0,
+              total_distance_km: 0,
+              total_duration_minutes: 0,
+              streak_days: 0,
+              longest_streak: 0,
+              is_public: true,
+              allow_friend_requests: true,
+              notification_preferences: {
+                achievements: true,
+                social: true,
+                activities: true
+              }
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('❌ Erro ao criar perfil:', createError);
+            // Fallback para perfil mockado se não conseguir criar
+            setProfile(createMockProfile(user));
+            return;
+          }
+
+          console.log('✅ Perfil criado com sucesso:', newProfile);
+          setProfile(newProfile as Profile);
+          return;
+        }
+        
+        // Para outros erros, usar perfil mockado como fallback
+        console.log('🔄 AuthContext: Usando perfil mockado como fallback');
+        setProfile(createMockProfile(user));
+        return;
+      }
+
+      console.log('✅ Perfil encontrado:', profileData);
+      setProfile(profileData as Profile);
+      
+    } catch (error) {
+      console.error('❌ Erro inesperado ao buscar perfil:', error);
+      // Fallback para perfil mockado
+      setProfile(createMockProfile(user));
+    }
   };
 
   // Buscar profile quando user mudar
