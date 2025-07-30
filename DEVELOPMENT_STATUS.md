@@ -656,6 +656,8 @@ export const useSocialFeed = (limit = 20) => {
 - ✅ **~~Sem feedback de erro OAuth~~** → **RESOLVIDO v0.2.1**: Estados visuais e logs detalhados
 - ✅ **~~GPS impreciso~~** → **RESOLVIDO**: GPS tracking avançado com filtros de accuracy
 - ✅ **~~Performance mobile~~** → **RESOLVIDO**: Mobile-first design + otimizações
+- ✅ **~~Loading infinito atividades~~** → **RESOLVIDO v0.2.5**: UUID/string compatibility e schema fixes
+- ✅ **~~Erro intensity_multiplier ambiguity~~** → **RESOLVIDO v0.2.5**: Database cleanup e função cleanup
 
 ### 🟢 **MELHORIAS MENORES (OPCIONAL)**
 - [ ] **Acessibilidade avançada**: ARIA labels mais detalhados
@@ -981,6 +983,49 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 - **✏️ 3 componentes modificados** para dados reais
 - **🧩 5 hooks customizados** criados
 - **📦 1 dependência** adicionada (date-fns)
+
+### **✅ v0.2.5 - Correções de Bugs de Atividades (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🐛 **CORREÇÕES CRÍTICAS: Sistema de Atividades**
+
+**🎯 PROBLEMAS RESOLVIDOS:**
+- Loading infinito ao iniciar atividades
+- Erro UUID/string incompatibilidade 
+- Schema inconsistências no banco
+- Erro intensity_multiplier ambiguity persistente
+
+**✅ CORREÇÕES IMPLEMENTADAS:**
+
+**🔧 CORREÇÃO 1: UUID/String Compatibility**
+- ✅ `FIX_ACTIVITY_TRACKING_ERRORS.sql` - Function get_activity_type_by_name_or_id
+- ✅ `src/hooks/useActivityTypes.ts` - Busca flexível por UUID ou nome
+- ✅ `src/pages/ActivityStart.tsx` - Dados dinâmicos do Supabase
+- ✅ **Loading infinito** eliminado
+
+**🗄️ CORREÇÃO 2: Schema Inconsistências**
+- ✅ `FIX_ACTIVITIES_TABLE_SCHEMA.sql` - Colunas missing adicionadas
+- ✅ **user_achievements.unlocked_at** adicionada e migrada
+- ✅ **activities.is_public** e campos relacionados criados
+- ✅ **activity_status enum** alinhado com frontend
+
+**💥 CORREÇÃO 3: Intensity_Multiplier Ambiguity**
+- ✅ `FIXED_INVESTIGATE_INTENSITY_MULTIPLIER.sql` - Cleanup completo
+- ✅ **Functions duplicadas** removidas sistematicamente
+- ✅ **Triggers conflitantes** eliminados
+- ✅ **Coluna ambígua** removida de activities
+- ✅ **Frontend query** simplificado para evitar JOINs problemáticos
+
+**📊 CORREÇÃO 4: Interfaces TypeScript**
+- ✅ `src/hooks/useActivities.ts` - Status 'active' em vez de 'in_progress'
+- ✅ `src/hooks/useAchievements.ts` - Interface UserAchievement corrigida
+- ✅ **Tipagem alinhada** com schema do banco
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Sistema de atividades 100% funcional** sem loading infinito
+- ✅ **Erro intensity_multiplier** completamente eliminado
+- ✅ **Database schema** consistente e otimizado
+- ✅ **TypeScript interfaces** alinhadas com backend
 
 ### **✅ v0.2.4 - Otimização de Layout (CONCLUÍDO!)**
 **Data**: Janeiro 2025

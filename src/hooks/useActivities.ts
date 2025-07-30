@@ -32,7 +32,7 @@ interface Activity {
   notes?: string;
   is_public: boolean;
   achievements_earned?: string[];
-  status: 'in_progress' | 'completed' | 'paused' | 'cancelled';
+  status: 'active' | 'completed' | 'paused' | 'cancelled';
   created_at: string;
   updated_at: string;
 }
@@ -70,7 +70,7 @@ export const useUserActivities = (limit = 20) => {
         .from('activities')
         .select(`
           *,
-          activity_types(name, category, difficulty, base_suor_per_minute)
+          activity_types!inner(name, category, difficulty, base_suor_per_minute)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -98,6 +98,8 @@ export const useCreateActivity = () => {
     mutationFn: async (activityData: CreateActivityData) => {
       if (!user?.id) throw new Error('User not authenticated');
 
+      const now = new Date().toISOString();
+      
       const { data, error } = await supabase
         .from('activities')
         .insert({
@@ -105,17 +107,15 @@ export const useCreateActivity = () => {
           title: activityData.title,
           description: activityData.description,
           activity_type_id: activityData.activity_type_id,
-          start_time: new Date().toISOString(),
+          started_at: now,
+          start_time: now, // Redundante mas garante compatibilidade
           start_location: activityData.start_location ? 
             `POINT(${activityData.start_location.lng} ${activityData.start_location.lat})` : null,
           suor_earned: 0,
           is_public: true,
-          status: 'in_progress'
+          status: 'active'
         })
-        .select(`
-          *,
-          activity_types(name, category, difficulty, base_suor_per_minute)
-        `)
+        .select('*')
         .single();
 
       if (error) throw error;
@@ -146,7 +146,7 @@ export const useUpdateActivity = () => {
           .from('activities')
           .select(`
             activity_type_id,
-            activity_types(base_suor_per_minute, intensity_multiplier)
+            activity_types!inner(base_suor_per_minute, intensity_multiplier)
           `)
           .eq('id', activityId)
           .single();
@@ -168,6 +168,8 @@ export const useUpdateActivity = () => {
         .update({
           ...updates,
           suor_earned: suorEarned,
+          ended_at: updates.end_time,
+          end_time: updates.end_time, // Garantir compatibilidade
           end_location: updates.end_location ? 
             `POINT(${updates.end_location.lng} ${updates.end_location.lat})` : null,
           updated_at: new Date().toISOString()
@@ -176,7 +178,7 @@ export const useUpdateActivity = () => {
         .eq('user_id', user.id)
         .select(`
           *,
-          activity_types(name, category)
+          activity_types!inner(name, category)
         `)
         .single();
 
@@ -233,7 +235,7 @@ export const useActivity = (activityId: string) => {
         .from('activities')
         .select(`
           *,
-          activity_types(*)
+          activity_types!inner(*)
         `)
         .eq('id', activityId)
         .eq('user_id', user.id)

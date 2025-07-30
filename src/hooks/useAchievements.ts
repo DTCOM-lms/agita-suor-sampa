@@ -8,7 +8,7 @@ interface Achievement {
   id: string;
   name: string;
   description: string;
-  category: 'activity' | 'distance' | 'duration' | 'frequency' | 'social' | 'special';
+  category: 'distance' | 'duration' | 'frequency' | 'social' | 'streak' | 'challenge' | 'level' | 'exploration' | 'seasonal' | 'special';
   type: 'milestone' | 'challenge' | 'badge' | 'trophy';
   condition_type: 'total_activities' | 'total_distance' | 'total_duration' | 'streak_days' | 'single_activity' | 'social_interaction' | 'custom';
   condition_value: number;
@@ -30,6 +30,7 @@ interface UserAchievement {
   unlocked_at: string;
   progress_value?: number;
   is_notified: boolean;
+  created_at: string;
   achievements?: Achievement;
 }
 

@@ -18,15 +18,21 @@ Um aplicativo **gamificado completo** para promover atividades físicas e bem-es
 ### **📋 Documentação Principal**
 | Documento | Status | Descrição |
 |-----------|--------|-----------|
+| **[📈 Status Desenvolvimento](./DEVELOPMENT_STATUS.md)** | ✅ **v0.2.5** | **Status completo + changelog de correções** |
 | **[📋 Visão Geral](./AGITA_DOCUMENTATION.md)** | ✅ Completo | Funcionalidades, roadmap e visão do produto |
-| **[📈 Status Desenvolvimento](./DEVELOPMENT_STATUS.md)** | ✅ Atualizado | Progresso atual, tarefas e changelog completo |
 | **[🏆 Plano Implementação](./IMPLEMENTATION_PLAN.md)** | ✅ **MVP COMPLETO!** | **Todos os sistemas implementados** |
 
 ### **🗄️ Database & Backend**
 | Documento | Status | Descrição |
 |-----------|--------|-----------|
 | **[🚀 Supabase Completo](./SUPABASE_IMPLEMENTATION.md)** | ✅ Centralizado | **Guia único: Tables + Seeds + Functions** |
+| **[📋 Scripts SQL Essenciais](./SQL_SCRIPTS_REFERENCE.md)** | ✅ **Organizado** | **Lista de scripts mantidos e suas funções** |
 | **[📋 Tabelas Only](./CREATE_TABLES_SUPABASE.md)** | ✅ Referência | Scripts isolados apenas para criação de tabelas |
+
+### **🐛 Correções & Manutenção**
+| Documento | Status | Descrição |
+|-----------|--------|-----------|
+| **[🔧 Correções v0.2.5](./BUG_FIXES_CONSOLIDATED_v0.2.5.md)** | ✅ **Consolidado** | **Todos os bug fixes aplicados e resolvidos** |
 
 ### **🔧 Configuração & Setup**
 | Documento | Status | Descrição |

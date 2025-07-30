@@ -48,15 +48,53 @@ export const useActivityType = (id: string) => {
   return useQuery({
     queryKey: ['activity-type', id],
     queryFn: async () => {
+      // Primeiro tentar buscar por UUID direto
+      const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+      
+      if (isUUID) {
+        const { data, error } = await supabase
+          .from('activity_types')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+        return data as ActivityType;
+      } else {
+        // Buscar por nome/categoria usando a function SQL
+        const { data, error } = await supabase
+          .rpc('get_activity_type_by_name_or_id', { input_value: id });
+
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error(`Activity type '${id}' not found`);
+        }
+        return data[0] as ActivityType;
+      }
+    },
+    enabled: !!id,
+  });
+};
+
+// Hook para buscar activity type por categoria (usado no ActivityStart)
+export const useActivityTypeByCategory = (category: string) => {
+  return useQuery({
+    queryKey: ['activity-type-by-category', category],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('activity_types')
         .select('*')
-        .eq('id', id)
-        .single();
+        .eq('category', category)
+        .eq('is_active', true)
+        .order('difficulty')
+        .limit(1);
 
       if (error) throw error;
-      return data as ActivityType;
+      if (!data || data.length === 0) {
+        throw new Error(`No activity type found for category '${category}'`);
+      }
+      return data[0] as ActivityType;
     },
-    enabled: !!id,
+    enabled: !!category,
   });
 }; 
