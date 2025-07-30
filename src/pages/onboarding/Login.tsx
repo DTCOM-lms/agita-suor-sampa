@@ -63,9 +63,23 @@ const Login = () => {
 
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
     try {
+      console.log(`🔐 Login: Iniciando login com ${provider}`);
       await signInWithProvider(provider);
+      
+      // Show loading feedback
+      toast({
+        title: `Iniciando login com ${provider}`,
+        description: "Você será redirecionado para autorizar o aplicativo...",
+      });
+      
     } catch (error) {
-      console.error(`${provider} login error:`, error);
+      console.error(`❌ ${provider} login error:`, error);
+      
+      toast({
+        variant: "destructive",
+        title: `Erro no login ${provider}`,
+        description: "Não foi possível iniciar o login. Tente novamente.",
+      });
     }
   };
 

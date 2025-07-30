@@ -53,9 +53,9 @@ const MobileBottomNav = () => {
     },
     {
       icon: Trophy,
-      label: "Desafios",
-      path: "#challenges",
-      isActive: false
+      label: "Conquistas",
+      path: "/achievements",
+      isActive: location.pathname === "/achievements"
     },
     {
       icon: Users,

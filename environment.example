@@ -1,0 +1,82 @@
+# 🔐 Agita - Configurações de Environment
+# Copie este arquivo para .env.local e preencha com suas chaves reais
+
+# ====================================
+# 🚀 SUPABASE CONFIGURATION
+# ====================================
+# Obtenha suas chaves em: https://supabase.com/dashboard/project/[seu-projeto]/settings/api
+VITE_SUPABASE_URL=https://jjlgmxbgxbcksvviuhmo.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqbGdteGJneGJja3N2dml1aG1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNzEyODIsImV4cCI6MjA2ODk0NzI4Mn0.bQ5p_0IfeL7aGLkUHsSTiwr_PALHXkMjHpU5CJ2fvRY
+
+# ====================================
+# 🗺️ MAPBOX CONFIGURATION
+# ====================================
+# Obtenha sua chave gratuita em: https://account.mapbox.com/access-tokens/
+VITE_MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token_here
+
+# ====================================
+# 🏃‍♂️ APPLICATION SETTINGS
+# ====================================
+# Configurações gerais da aplicação
+VITE_APP_NAME=Agita
+VITE_APP_VERSION=0.2.0
+VITE_APP_ENVIRONMENT=development
+
+# URL base da aplicação (para produção)
+VITE_APP_BASE_URL=http://localhost:5173
+
+# ====================================
+# 💰 SUOR SYSTEM SETTINGS
+# ====================================
+# Configurações do sistema de gamificação
+VITE_SUOR_INITIAL_BALANCE=100
+VITE_SUOR_MAX_DAILY_EARNED=1000
+VITE_SUOR_STREAK_BONUS=50
+
+# ====================================
+# 📱 PWA SETTINGS
+# ====================================
+# Configurações para Progressive Web App
+VITE_PWA_NAME=Agita - São Paulo
+VITE_PWA_SHORT_NAME=Agita
+VITE_PWA_DESCRIPTION=Aplicativo gamificado para promover atividades físicas em São Paulo
+
+# ====================================
+# 🔧 ANALYTICS & MONITORING (OPCIONAL)
+# ====================================
+# Google Analytics (se implementado)
+# VITE_GA_TRACKING_ID=G-XXXXXXXXXX
+
+# Sentry (para monitoramento de erros)
+# VITE_SENTRY_DSN=https://your-sentry-dsn-here
+
+# ====================================
+# 🌍 EXTERNAL APIS (FUTURO)
+# ====================================
+# APIs externas que podem ser implementadas
+
+# OpenWeatherMap (para dados de clima)
+# VITE_OPENWEATHER_API_KEY=your_weather_api_key_here
+
+# Google Places API (para busca de locais)
+# VITE_GOOGLE_PLACES_API_KEY=your_google_places_key_here
+
+# Strava API (para integração com plataformas de fitness)
+# VITE_STRAVA_CLIENT_ID=your_strava_client_id
+# VITE_STRAVA_CLIENT_SECRET=your_strava_client_secret
+
+# ====================================
+# 🔒 SECURITY SETTINGS
+# ====================================
+# Configurações de segurança
+VITE_ENABLE_RATE_LIMITING=true
+VITE_MAX_UPLOAD_SIZE_MB=10
+VITE_SESSION_TIMEOUT_MINUTES=60
+
+# ====================================
+# 🧪 DEVELOPMENT SETTINGS
+# ====================================
+# Apenas para desenvolvimento
+VITE_ENABLE_DEBUG_MODE=true
+VITE_SHOW_DEV_TOOLS=true
+VITE_ENABLE_MOCK_DATA=false 

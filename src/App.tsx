@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AchievementNotification from "@/components/AchievementNotification";
+import { AchievementNotificationProvider, useAchievementNotificationContext } from "@/contexts/AchievementNotificationContext";
 
 // Pages
 import Index from "./pages/Index";
@@ -32,15 +34,38 @@ import ForgotPassword from "./pages/onboarding/ForgotPassword";
 import ProfileSetup from "./pages/onboarding/ProfileSetup";
 import Integrations from "./pages/onboarding/Integrations";
 
+// Other Pages
+import Achievements from "./pages/Achievements";
+
 const queryClient = new QueryClient();
+
+// Component to handle global achievement notifications
+const AppWithNotifications = ({ children }: { children: React.ReactNode }) => {
+  const { currentNotification, closeCurrentNotification } = useAchievementNotificationContext();
+
+  return (
+    <>
+      {children}
+      {currentNotification && (
+        <AchievementNotification
+          achievement={currentNotification}
+          onClose={closeCurrentNotification}
+          show={!!currentNotification}
+        />
+      )}
+    </>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <AchievementNotificationProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <AppWithNotifications>
+          <BrowserRouter>
           <Routes>
             {/* OAuth Callback Route */}
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -90,6 +115,11 @@ const App = () => (
             <Route path="/activity/results" element={
               <ProtectedRoute>
                 <ActivityResults />
+              </ProtectedRoute>
+            } />
+            <Route path="/achievements" element={
+              <ProtectedRoute>
+                <Achievements />
               </ProtectedRoute>
             } />
             
@@ -148,8 +178,10 @@ const App = () => (
             {/* 404 - Keep as last route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+          </BrowserRouter>
+        </AppWithNotifications>
+        </TooltipProvider>
+      </AchievementNotificationProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

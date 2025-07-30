@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin } from "lucide-react";
+import { MapPin, AlertCircle } from "lucide-react";
+import { getMapboxToken, isMapboxConfigured, SAO_PAULO_CENTER, DEFAULT_MAP_CONFIG, logMapboxConfig } from '@/utils/mapboxHelpers';
 
 interface LocationPoint {
   lat: number;
@@ -24,24 +23,41 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ route, currentLocation, isTra
   const map = useRef<mapboxgl.Map | null>(null);
   const routeSource = useRef<mapboxgl.GeoJSONSource | null>(null);
   const currentLocationMarker = useRef<mapboxgl.Marker | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string>('');
+  
+  // Usar utilitários centralizados do Mapbox
   const [isMapReady, setIsMapReady] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
+
+  // Log da configuração em desenvolvimento
+  useEffect(() => {
+    logMapboxConfig();
+  }, []);
 
   const initializeMap = () => {
-    if (!mapContainer.current || !mapboxToken) return;
+    if (!mapContainer.current) {
+      setMapError('Container do mapa não encontrado');
+      return;
+    }
 
-    mapboxgl.accessToken = mapboxToken;
-    
-    // Default to São Paulo center
-    const defaultCenter: [number, number] = [-46.6333, -23.5505];
-    
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: currentLocation ? [currentLocation.lng, currentLocation.lat] : defaultCenter,
-      zoom: currentLocation ? 16 : 12,
-      pitch: 45,
-    });
+    const token = getMapboxToken();
+    if (!token) {
+      setMapError('Token do Mapbox não configurado ou inválido');
+      return;
+    }
+
+    try {
+      mapboxgl.accessToken = token;
+      
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: DEFAULT_MAP_CONFIG.style,
+        center: currentLocation ? [currentLocation.lng, currentLocation.lat] : DEFAULT_MAP_CONFIG.center,
+        zoom: currentLocation ? 16 : DEFAULT_MAP_CONFIG.zoom,
+        pitch: DEFAULT_MAP_CONFIG.pitch,
+      });
+
+      // Resetar erro se mapa carregou com sucesso
+      setMapError(null);
 
     map.current.addControl(
       new mapboxgl.NavigationControl({
@@ -84,14 +100,19 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ route, currentLocation, isTra
 
       routeSource.current = map.current?.getSource('route') as mapboxgl.GeoJSONSource;
     });
+
+    } catch (error) {
+      console.error('Erro ao inicializar mapa:', error);
+      setMapError('Erro ao carregar o mapa. Verifique a chave do Mapbox.');
+    }
   };
 
-  // Initialize map when token is provided
+  // Initialize map automatically if token is available
   useEffect(() => {
-    if (mapboxToken && !map.current) {
+    if (isMapboxConfigured() && !map.current) {
       initializeMap();
     }
-  }, [mapboxToken]);
+  }, []);
 
   // Update route
   useEffect(() => {
@@ -151,35 +172,55 @@ const ActivityMap: React.FC<ActivityMapProps> = ({ route, currentLocation, isTra
     };
   }, []);
 
-  if (!mapboxToken) {
+  if (!isMapboxConfigured()) {
     return (
       <div className="h-full flex items-center justify-center bg-muted">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
-            <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <CardTitle>Configurar Mapa</CardTitle>
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <CardTitle className="text-destructive">Mapa Não Disponível</CardTitle>
             <CardDescription>
-              Para usar o mapa, você precisa inserir sua chave do Mapbox. 
-              Acesse <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline">mapbox.com</a> para obter sua chave gratuita.
+              A chave do Mapbox não está configurada. Para usar as funcionalidades de mapa:
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="mapbox-token">Mapbox Public Token</Label>
-              <Input
-                id="mapbox-token"
-                type="password"
-                placeholder="pk.eyJ1..."
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-              />
+            <div className="text-sm text-muted-foreground space-y-2">
+              <p><strong>1.</strong> Obtenha uma chave gratuita em: <a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener noreferrer" className="text-primary underline">mapbox.com</a></p>
+              <p><strong>2.</strong> Configure no arquivo <code className="bg-muted px-1 rounded">.env.local</code>:</p>
+              <div className="bg-muted p-2 rounded text-xs font-mono">
+                VITE_MAPBOX_ACCESS_TOKEN=pk.sua_chave_aqui
+              </div>
+              <p><strong>3.</strong> Reinicie o servidor de desenvolvimento</p>
             </div>
             <Button 
-              onClick={() => mapboxToken && initializeMap()} 
-              disabled={!mapboxToken}
+              onClick={() => window.location.reload()} 
               className="w-full"
+              variant="outline"
             >
-              Carregar Mapa
+              Recarregar Página
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (mapError) {
+    return (
+      <div className="h-full flex items-center justify-center bg-muted">
+        <Card className="w-full max-w-md mx-4">
+          <CardHeader className="text-center">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <CardTitle className="text-destructive">Erro no Mapa</CardTitle>
+            <CardDescription>{mapError}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={initializeMap} 
+              className="w-full"
+              variant="outline"
+            >
+              Tentar Novamente
             </Button>
           </CardContent>
         </Card>
