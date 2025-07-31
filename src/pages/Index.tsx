@@ -27,6 +27,7 @@ import { useActivityTypes } from '@/hooks/useActivityTypes';
 import { useUserStats } from '@/hooks/useUserStats';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { SuorDebugPanel } from '@/components/SuorDebugPanel';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,7 +108,7 @@ const Index = () => {
                       <div className="flex items-center gap-2 mt-2 pt-2 border-t">
                         <div className="flex items-center gap-1 text-xs">
                           <Zap className="h-3 w-3 text-yellow-500" />
-                          <span className="font-medium">{Math.round(profile?.current_suor || 0)} SUOR</span>
+                          <span className="font-medium">{Math.round(userStats?.total_suor_earned || 0)} SUOR</span>
                         </div>
                         <div className="flex items-center gap-1 text-xs">
                           <Trophy className="h-3 w-3 text-blue-500" />
@@ -159,7 +160,7 @@ const Index = () => {
           <div className="flex items-center gap-4 mt-3 text-sm">
             <div className="flex items-center gap-1">
               <Zap className="h-4 w-4" />
-              <span className="font-medium">{Math.round(profile?.current_suor || 0)}</span>
+              <span className="font-medium">{Math.round(userStats?.total_suor_earned || 0)}</span>
               <span className="opacity-75">SUOR</span>
             </div>
             <div className="flex items-center gap-1">
@@ -179,7 +180,7 @@ const Index = () => {
       <main className="flex-1 pb-20">
         {/* Stats Cards */}
         <div className="px-4 py-6 mt-4">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 mb-3">
             <Card className="stats-blue border-blue-200 card-hover animate-slide-up">
               <CardContent className="p-3 text-center">
                 <Activity className="h-5 w-5 text-blue-600 mx-auto mb-1" />
@@ -188,7 +189,19 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="stats-green border-green-200 card-hover animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <Card className="stats-yellow border-yellow-200 card-hover animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              <CardContent className="p-3 text-center">
+                <Zap className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
+                <p className="text-xs text-yellow-600/70">SUOR Total</p>
+                <p className="text-lg font-bold text-yellow-700">
+                  {Math.round(userStats?.total_suor_earned || 0)}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="stats-green border-green-200 card-hover animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <CardContent className="p-3 text-center">
                 <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
                 <p className="text-xs text-green-600/70">Distância</p>
@@ -201,7 +214,7 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="stats-purple border-purple-200 card-hover animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <Card className="stats-purple border-purple-200 card-hover animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <CardContent className="p-3 text-center">
                 <Clock className="h-5 w-5 text-purple-600 mx-auto mb-1" />
                 <p className="text-xs text-purple-600/70">Tempo</p>
@@ -307,6 +320,7 @@ const Index = () => {
       </main>
 
       <MobileBottomNav />
+      <SuorDebugPanel />
     </div>
   );
 };

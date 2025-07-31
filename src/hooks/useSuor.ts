@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserStats } from './useUserStats';
 
 interface SuorTransaction {
   id: string;
@@ -65,43 +66,83 @@ export const useCreateSuorTransaction = () => {
     }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
-      // 1. Criar transação
-      const { data: newTransaction, error: transactionError } = await supabase
-        .from('suor_transactions')
-        .insert({
+      console.log('🔍 CRIANDO TRANSAÇÃO SUOR:', transaction);
+
+      // 1. Tentar usar função RPC primeiro (mais seguro)
+      try {
+        const { data: newTransaction, error: rpcError } = await supabase
+          .rpc('create_suor_transaction_secure', {
+            p_type: transaction.type,
+            p_source: transaction.source,
+            p_amount: transaction.amount,
+            p_description: transaction.description,
+            p_activity_id: transaction.activity_id,
+            p_challenge_id: transaction.challenge_id,
+            p_achievement_id: transaction.achievement_id,
+            p_metadata: transaction.metadata
+          });
+
+        if (rpcError) {
+          console.warn('⚠️ RPC falhou, tentando INSERT direto:', rpcError);
+          throw rpcError;
+        }
+
+        console.log('✅ TRANSAÇÃO CRIADA VIA RPC:', newTransaction);
+        return newTransaction;
+
+      } catch (rpcError) {
+        console.log('🔄 RPC falhou, tentando INSERT direto...');
+
+        // 2. Fallback: tentar INSERT direto
+        const { data: newTransaction, error: transactionError } = await supabase
+          .from('suor_transactions')
+          .insert({
+            user_id: user.id,
+            ...transaction
+          })
+          .select()
+          .single();
+
+        if (transactionError) {
+          console.error('❌ ERRO AO CRIAR TRANSAÇÃO:', transactionError);
+          throw transactionError;
+        }
+
+        console.log('✅ TRANSAÇÃO CRIADA VIA INSERT:', newTransaction);
+
+        // Para INSERT direto, ainda precisamos atualizar o perfil
+        const { error: profileError } = await supabase.rpc('update_user_suor', {
           user_id: user.id,
-          ...transaction
-        })
-        .select()
-        .single();
+          amount_change: transaction.type === 'earned' || transaction.type === 'bonus' 
+            ? transaction.amount 
+            : -transaction.amount
+        });
 
-      if (transactionError) throw transactionError;
+        if (profileError) {
+          console.error('❌ ERRO AO ATUALIZAR PERFIL:', profileError);
+          throw profileError;
+        }
 
-      // 2. Atualizar saldo do usuário
-      const { error: profileError } = await supabase.rpc('update_user_suor', {
-        user_id: user.id,
-        amount_change: transaction.type === 'earned' || transaction.type === 'bonus' 
-          ? transaction.amount 
-          : -transaction.amount
-      });
-
-      if (profileError) throw profileError;
-
-      return newTransaction;
+        return newTransaction;
+      }
     },
     onSuccess: () => {
+      console.log('✅ TRANSAÇÃO SUOR CONCLUÍDA COM SUCESSO');
       // Invalidar caches relacionados
       queryClient.invalidateQueries({ queryKey: ['suor-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user-stats'] });
     },
   });
 };
 
 export const useSuorBalance = () => {
   const { profile } = useAuth();
+  const { data: userStats } = useUserStats();
+  
   return {
-    currentSuor: profile?.current_suor || 0,
-    totalSuor: profile?.total_suor || 0,
+    currentSuor: userStats?.total_suor_earned || 0, // Usar dados reais das atividades
+    totalSuor: userStats?.total_suor_earned || 0,   // Usar dados reais das atividades
     level: profile?.level || 1,
     experiencePoints: profile?.experience_points || 0
   };

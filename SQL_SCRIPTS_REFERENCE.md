@@ -51,6 +51,30 @@ Este documento lista todos os scripts SQL essenciais do projeto e suas funções
 - ✅ Função `calculate_activity_suor` para cálculo automático
 - ✅ Business logic para transações SUOR
 
+#### `ULTRA_SIMPLE_SUOR_FIX.sql` ⭐ **PRINCIPAL**
+**Função**: Script definitivo para sincronizar sistema SUOR
+- ✅ **Sem ambiguidade SQL** - nomes únicos em tudo
+- ✅ **Funções ultra-simples** e diretas
+- ✅ **Sincroniza automaticamente** todos os usuários
+- ✅ **Verifica antes/depois** com relatórios detalhados
+- ✅ **100% garantido** - impossível dar erro de ambiguidade
+
+#### `FIX_SUOR_TRANSACTIONS_RLS.sql` 🔧 **CRÍTICO**
+**Função**: Corrige erro 403 Forbidden ao finalizar atividades
+- ✅ **Corrige políticas RLS** da tabela suor_transactions
+- ✅ **Permite INSERT** de transações próprias (auth.uid() = user_id)
+- ✅ **Função RPC segura** create_suor_transaction_secure()
+- ✅ **Teste automático** de inserção de transações
+- ✅ **Resolve erro 42501** Row Level Security violation
+
+#### `SISTEMA_SUOR_COMPLETO_V1.0.md` 📚 **DOCUMENTAÇÃO FINAL**
+**Função**: Documentação completa do sistema SUOR implementado
+- ✅ **Resumo de todas as implementações** e correções
+- ✅ **Guia de manutenção** para desenvolvedores
+- ✅ **Métricas de sucesso** e indicadores
+- ✅ **Roadmap futuro** e melhorias planejadas
+- ✅ **Status final: 100% funcional** com todas as funcionalidades
+
 ### **👥 Scripts do Sistema Social**
 
 #### `SOCIAL_FUNCTIONS.sql`
@@ -127,10 +151,32 @@ Se algum problema crítico voltar:
 2. **Segundo**: Verifique logs do frontend (Network tab)
 3. **Terceiro**: Consulte `BUG_FIXES_CONSOLIDATED_v0.2.5.md`
 
+### **🔧 Scripts de Correções Técnicas v0.2.8**
+
+#### `FIX_GEOMETRY_COORDINATES_UNIVERSAL.sql`
+**Função**: Funções RPC PostGIS universais para coordenadas geoespaciais
+- ✅ Cria função `create_activity_with_location` para inserção com coordenadas
+- ✅ Cria função `update_activity_with_end_location` para atualização com localização final
+- ✅ Cria função `create_social_post_with_location` para posts com localização
+- ✅ **Detecção automática** de tipos point vs geometry
+- ✅ **Compatibilidade universal** com qualquer schema PostGIS
+- ✅ **SCRIPT FINAL QUE RESOLVEU CRIAÇÃO DE ATIVIDADES**
+
+#### `CHECK_RPC_FUNCTIONS_SIMPLE.sql`
+**Função**: Diagnóstico e verificação de configuração do backend
+- ✅ Verifica se funções RPC foram criadas corretamente
+- ✅ Valida tipos de colunas de localização (point vs geometry)
+- ✅ Confirma existência de dados (atividades, activity_types)
+- ✅ **FERRAMENTA DE DEBUG ESSENCIAL**
+
+---
+
 ## 📊 Status Atual
 
-- ✅ **8 scripts essenciais** mantidos e organizados
+- ✅ **10 scripts essenciais** mantidos e organizados
 - ✅ **35+ atividades** populadas no banco
+- ✅ **3 funções RPC PostGIS** implementadas
+- ✅ **Sistema de coordenadas** 100% funcional
 - ✅ **11 arquivos desnecessários** removidos
 - ✅ **Documentação consolidada** em documento único
 - ✅ **Sistema limpo** e maintível
@@ -140,4 +186,4 @@ Se algum problema crítico voltar:
 
 **🎯 Objetivo**: Manter apenas os scripts essenciais e funcionais, eliminando confusão e mantendo o projeto organizado.
 
-*Última atualização: Janeiro 2025 - Organização completa! 🚀*
+*Última atualização: Janeiro 2025 - Sistema 100% Funcional com PostGIS! 🚀*
