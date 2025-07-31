@@ -61,6 +61,16 @@ Este documento lista todos os scripts SQL essenciais do projeto e suas funções
 - ✅ `cleanup_comment_likes` com trigger automático
 - ✅ Atomic operations para performance
 
+### **🏃‍♂️ Scripts de Dados e Atividades**
+
+#### `ENSURE_ALL_ACTIVITIES_FIXED.sql`
+**Função**: Popula o banco com 35+ tipos de atividades
+- ✅ Insere atividades outdoor (corrida, ciclismo) com GPS
+- ✅ Insere atividades indoor (musculação, yoga) sem GPS
+- ✅ Valores corretos para enums `activity_category`
+- ✅ Configurações realistas de SUOR, dificuldade e duração
+- ✅ **SCRIPT ESSENCIAL** para funcionamento do sistema
+
 ## 🗑️ Scripts Removidos (Desnecessários)
 
 ### **❌ Tentativas de Fix que Falharam**
@@ -91,9 +101,10 @@ Este documento lista todos os scripts SQL essenciais do projeto e suas funções
 2. FIX_OAUTH_DATABASE_ERROR.sql
 3. SUOR_FUNCTIONS.sql
 4. SOCIAL_FUNCTIONS.sql
-5. FIX_ACTIVITY_TRACKING_ERRORS.sql
-6. FIX_ACTIVITIES_TABLE_SCHEMA.sql
-7. FIXED_INVESTIGATE_INTENSITY_MULTIPLIER.sql (se necessário)
+5. ENSURE_ALL_ACTIVITIES_FIXED.sql (popula atividades)
+6. FIX_ACTIVITY_TRACKING_ERRORS.sql
+7. FIX_ACTIVITIES_TABLE_SCHEMA.sql
+8. FIXED_INVESTIGATE_INTENSITY_MULTIPLIER.sql (se necessário)
 ```
 
 ### **🔍 Para diagnosticar problemas:**
@@ -118,7 +129,8 @@ Se algum problema crítico voltar:
 
 ## 📊 Status Atual
 
-- ✅ **7 scripts essenciais** mantidos e organizados
+- ✅ **8 scripts essenciais** mantidos e organizados
+- ✅ **35+ atividades** populadas no banco
 - ✅ **11 arquivos desnecessários** removidos
 - ✅ **Documentação consolidada** em documento único
 - ✅ **Sistema limpo** e maintível

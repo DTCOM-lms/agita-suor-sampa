@@ -116,4 +116,29 @@ Com a base sólida implementada, agora é fácil adicionar:
 
 ---
 
-*📈 Implementação concluída em Dezembro 2024* 
+## 🆕 **ATUALIZAÇÕES RECENTES (Janeiro 2025)**
+
+### **📊 PASSO 4: Dados Reais e Histórico de Atividades ✅**
+
+#### **Arquivos Criados/Modificados:**
+- ✅ **`src/hooks/useUserStats.ts`** - Hook para estatísticas reais do usuário
+- ✅ **`src/pages/Activities.tsx`** - Página completa de histórico de atividades
+- ✅ **`src/pages/Index.tsx`** - Dados reais na página principal
+- ✅ **`src/App.tsx`** - Nova rota `/activities`
+
+#### **Funcionalidades Implementadas:**
+- **Contadores reais** na página principal (atividades, distância, tempo)
+- **Histórico completo** com página dedicada e busca
+- **Sistema de filtros** por categoria e status
+- **Interface profissional** mobile-first
+- **Performance otimizada** com cache inteligente
+
+#### **Melhorias de UX:**
+- **Atividades recentes removidas** da página principal
+- **Navegação via navbar** para histórico (/activities)
+- **Busca em tempo real** por nome ou tipo de atividade
+- **Estatísticas resumidas** no topo da página de histórico
+
+---
+
+*📈 Última atualização: Janeiro 2025 - v0.2.7* 

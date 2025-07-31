@@ -23,8 +23,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useSocialFeed } from '@/hooks/useSocialFeed';
-import { useUserActivities } from '@/hooks/useActivities';
 import { useActivityTypes } from '@/hooks/useActivityTypes';
+import { useUserStats } from '@/hooks/useUserStats';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -41,8 +41,8 @@ const Index = () => {
   const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
   const { data: socialFeed } = useSocialFeed(5);
-  const { data: recentActivities } = useUserActivities(3);
   const { data: activityTypes } = useActivityTypes();
+  const { data: userStats } = useUserStats();
 
   const handleLogout = async () => {
     try {
@@ -184,7 +184,7 @@ const Index = () => {
               <CardContent className="p-3 text-center">
                 <Activity className="h-5 w-5 text-blue-600 mx-auto mb-1" />
                 <p className="text-xs text-blue-600/70">Atividades</p>
-                <p className="text-lg font-bold text-blue-700">{profile?.total_activities || 0}</p>
+                <p className="text-lg font-bold text-blue-700">{userStats?.total_activities || 0}</p>
               </CardContent>
             </Card>
             
@@ -193,7 +193,10 @@ const Index = () => {
                 <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
                 <p className="text-xs text-green-600/70">Distância</p>
                 <p className="text-lg font-bold text-green-700">
-                  {(profile?.total_distance_km || 0).toFixed(1)}km
+                  {(userStats?.total_distance_km || 0) < 1 
+                    ? `${Math.round((userStats?.total_distance_km || 0) * 1000)}m`
+                    : `${(userStats?.total_distance_km || 0).toFixed(1)}km`
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -203,7 +206,7 @@ const Index = () => {
                 <Clock className="h-5 w-5 text-purple-600 mx-auto mb-1" />
                 <p className="text-xs text-purple-600/70">Tempo</p>
                 <p className="text-lg font-bold text-purple-700">
-                  {Math.round((profile?.total_duration_minutes || 0) / 60)}h
+                  {Math.round((userStats?.total_duration_minutes || 0) / 60)}h
                 </p>
               </CardContent>
             </Card>
@@ -256,44 +259,7 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Recent Activities */}
-        {recentActivities && recentActivities.length > 0 && (
-          <div className="px-4 mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold">Atividades Recentes</h2>
-              <Button variant="ghost" size="sm" className="text-primary">
-                Ver todas
-              </Button>
-            </div>
-            <div className="space-y-3">
-              {recentActivities.map((activity) => (
-                <Card key={activity.id} className="card-hover animate-slide-up">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary/10 to-primary/20 rounded-full flex items-center justify-center">
-                          <Activity className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="font-medium">{activity.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {activity.created_at && format(new Date(activity.created_at), 'dd MMM, HH:mm', { locale: ptBR })}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-primary">{activity.suor_earned} SUOR</p>
-                        <p className="text-sm text-muted-foreground">
-                          {activity.distance_km ? `${activity.distance_km}km` : `${activity.duration_minutes}min`}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         {/* Social Feed Preview */}
         {socialFeed && socialFeed.length > 0 && (

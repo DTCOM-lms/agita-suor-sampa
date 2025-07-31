@@ -84,30 +84,38 @@ bun dev
 ```
 
 ### Acesse o aplicativo
-- **Local**: http://localhost:5173
+- **Local**: http://localhost:8080
 - **Produção**: [Link quando disponível]
 
 ## 🎯 Funcionalidades Implementadas
 
 ### ✅ **CORE FEATURES - 100% Completo**
 - 🔐 **Autenticação Supabase** com profiles automáticos
-- 🏃‍♂️ **15+ Tipos de Atividades** com dados reais do backend
+- 🏃‍♂️ **35+ Tipos de Atividades** com interface completa de seleção
+- 🔍 **Sistema de Busca** para encontrar atividades rapidamente
+- 📱 **Botão Flutuante** para seleção intuitiva e sempre acessível
+- 📊 **Dados Reais** - contadores baseados em atividades reais do usuário
+- 📋 **Histórico Completo** - página dedicada com busca e filtros
 - 💰 **Sistema SUOR Completo** com transações e economia virtual
 - 🏆 **Sistema de Conquistas** com progress tracking automático
 - 📱 **Feed Social** com likes, comentários e posts automáticos
-- 📊 **Dashboard Rico** com estatísticas em tempo real
 
-### ✅ **GPS & TRACKING - 100% Completo**
-- 🗺️ **GPS Tracking Avançado** com precisão profissional
+### ✅ **GPS & TRACKING INTELIGENTE - 100% Completo**
+- 🗺️ **GPS Tracking Adaptativo** - GPS para outdoor, timer para indoor
+- 📍 **Localização Sempre Disponível** no mapa (GPS + fallback)
+- 🎯 **Interface Condicional** - GPS blocks só quando necessário
 - 📏 **Cálculo Automático** de distância, velocidade, ritmo, elevação
 - 🗺️ **Mapbox Integration** com visualização de rotas em tempo real
 - 💾 **Armazenamento GPS** detalhado no PostgreSQL
-- 📈 **Interface Rica** com métricas avançadas
+- ⏱️ **Sistema Dual** - GPS tracking + timer manual robusto
 
 ### ✅ **TECH FEATURES - 100% Completo**
 - 🔧 **TypeScript 100%** tipado com interfaces robustas
 - ⚡ **15+ React Hooks** customizados especializados
 - 🔄 **TanStack Query** para cache inteligente e sync
+- 🔍 **Sistema de Busca Avançado** com filtros em tempo real
+- 📱 **Interface Adaptativa** que se ajusta ao tipo de atividade
+- 🎨 **Ícones Inteligentes** específicos para cada atividade
 - 🔐 **Environment System** centralizado com validação
 - 🛡️ **Error Handling** robusto com fallbacks gracioso
 - 📱 **Mobile-First Design** totalmente responsivo

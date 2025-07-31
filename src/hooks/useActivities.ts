@@ -96,30 +96,102 @@ export const useCreateActivity = () => {
 
   return useMutation({
     mutationFn: async (activityData: CreateActivityData) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      console.log('🚀 INICIANDO createActivity mutation:', {
+        user_id: user?.id,
+        activityData,
+        isAuthenticated: !!user?.id
+      });
+
+      if (!user?.id) {
+        console.error('❌ USUÁRIO NÃO AUTENTICADO');
+        throw new Error('User not authenticated');
+      }
 
       const now = new Date().toISOString();
+      console.log('⏰ Timestamp criado:', now);
       
-      const { data, error } = await supabase
-        .from('activities')
-        .insert({
+      // Preparar dados para inserção
+      const insertData: any = {
+        user_id: user.id,
+        title: activityData.title,
+        description: activityData.description,
+        activity_type_id: activityData.activity_type_id,
+        started_at: now,
+        start_time: now, // Redundante mas garante compatibilidade
+        suor_earned: 0,
+        is_public: true,
+        status: 'active'
+      };
+
+      // Usar RPC para inserir com geometria correta se temos localização
+      if (activityData.start_location) {
+        console.log('🔍 USANDO RPC create_activity_with_location com localização:', {
           user_id: user.id,
           title: activityData.title,
-          description: activityData.description,
           activity_type_id: activityData.activity_type_id,
-          started_at: now,
-          start_time: now, // Redundante mas garante compatibilidade
-          start_location: activityData.start_location ? 
-            `POINT(${activityData.start_location.lng} ${activityData.start_location.lat})` : null,
-          suor_earned: 0,
-          is_public: true,
-          status: 'active'
-        })
-        .select('*')
-        .single();
+          longitude: activityData.start_location.lng,
+          latitude: activityData.start_location.lat
+        });
 
-      if (error) throw error;
-      return data;
+        const { data, error } = await supabase
+          .rpc('create_activity_with_location', {
+            p_user_id: user.id,
+            p_title: activityData.title,
+            p_activity_type_id: activityData.activity_type_id,
+            p_start_time: now,
+            p_longitude: activityData.start_location.lng,
+            p_latitude: activityData.start_location.lat,
+            p_description: activityData.description,
+            p_suor_earned: 0,
+            p_is_public: true,
+            p_status: 'active'
+          });
+
+        console.log('🔍 RESULTADO RPC create_activity_with_location:', { data, error });
+
+        if (error) {
+          console.error('❌ ERRO RPC create_activity_with_location:', error);
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          console.error('❌ RPC retornou dados vazios:', data);
+          throw new Error('RPC create_activity_with_location retornou dados vazios');
+        }
+
+        const activity = data[0];
+        console.log('✅ ATIVIDADE CRIADA VIA RPC:', activity);
+        return activity;
+      } else {
+        // Inserção sem localização
+        console.log('🔍 USANDO INSERT DIRETO sem localização:', {
+          user_id: user.id,
+          title: activityData.title,
+          activity_type_id: activityData.activity_type_id,
+          insertData
+        });
+
+        const { data, error } = await supabase
+          .from('activities')
+          .insert(insertData)
+          .select('*')
+          .single();
+
+        console.log('🔍 RESULTADO INSERT DIRETO:', { data, error });
+
+        if (error) {
+          console.error('❌ ERRO INSERT DIRETO:', error);
+          throw error;
+        }
+
+        if (!data) {
+          console.error('❌ INSERT DIRETO retornou dados vazios:', data);
+          throw new Error('INSERT direto retornou dados vazios');
+        }
+
+        console.log('✅ ATIVIDADE CRIADA VIA INSERT DIRETO:', data);
+        return data;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-activities'] });
@@ -163,24 +235,48 @@ export const useUpdateActivity = () => {
       }
 
       // 2. Atualizar atividade
-      const { data, error } = await supabase
-        .from('activities')
-        .update({
-          ...updates,
-          suor_earned: suorEarned,
-          ended_at: updates.end_time,
-          end_time: updates.end_time, // Garantir compatibilidade
-          end_location: updates.end_location ? 
-            `POINT(${updates.end_location.lng} ${updates.end_location.lat})` : null,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', activityId)
-        .eq('user_id', user.id)
-        .select(`
-          *,
-          activity_types!inner(name, category)
-        `)
-        .single();
+      let data, error;
+      
+      if (updates.end_location) {
+        // Usar RPC para atualizar com geometria
+        const result = await supabase
+          .rpc('update_activity_with_end_location', {
+            p_activity_id: activityId,
+            p_user_id: user.id,
+            p_end_time: updates.end_time,
+            p_longitude: updates.end_location.lng,
+            p_latitude: updates.end_location.lat,
+            p_duration_minutes: updates.duration_minutes,
+            p_distance_km: updates.distance_km,
+            p_gps_route: updates.gps_route,
+            p_suor_earned: suorEarned,
+            p_status: updates.status || 'completed'
+          });
+        
+        data = result.data?.[0];
+        error = result.error;
+      } else {
+        // Atualização sem localização final
+        const result = await supabase
+          .from('activities')
+          .update({
+            ...updates,
+            suor_earned: suorEarned,
+            ended_at: updates.end_time,
+            end_time: updates.end_time,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', activityId)
+          .eq('user_id', user.id)
+          .select(`
+            *,
+            activity_types!inner(name, category)
+          `)
+          .single();
+          
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
 

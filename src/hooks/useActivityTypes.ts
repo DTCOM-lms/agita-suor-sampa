@@ -48,27 +48,52 @@ export const useActivityType = (id: string) => {
   return useQuery({
     queryKey: ['activity-type', id],
     queryFn: async () => {
+      console.log('🔍 useActivityType - Buscando:', id);
+      
       // Primeiro tentar buscar por UUID direto
       const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
       
       if (isUUID) {
+        console.log('🔍 Busca por UUID:', id);
         const { data, error } = await supabase
           .from('activity_types')
           .select('*')
           .eq('id', id)
           .single();
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Erro na busca UUID:', error);
+          throw error;
+        }
+        console.log('✅ Resultado UUID:', data);
         return data as ActivityType;
       } else {
+        console.log('🔍 Busca por RPC:', id);
         // Buscar por nome/categoria usando a function SQL
         const { data, error } = await supabase
           .rpc('get_activity_type_by_name_or_id', { input_value: id });
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Erro na busca RPC:', error);
+          throw error;
+        }
         if (!data || data.length === 0) {
+          console.error('❌ Nenhum resultado encontrado para:', id);
           throw new Error(`Activity type '${id}' not found`);
         }
+        console.log('✅ Resultado RPC:', data[0]);
+        
+        // Debug específico para Aeróbica
+        if (id.toLowerCase().includes('aeróbica') || id.toLowerCase().includes('aerobica')) {
+          console.log('🔴 AERÓBICA - DADOS DO BANCO:', {
+            'ID_BUSCADO': id,
+            'NOME_RETORNADO': data[0].name,
+            'SUPPORTS_GPS_DO_BANCO': data[0].supports_gps,
+            'TIPO_SUPPORTS_GPS': typeof data[0].supports_gps,
+            'TODOS_OS_DADOS': data[0]
+          });
+        }
+        
         return data[0] as ActivityType;
       }
     },

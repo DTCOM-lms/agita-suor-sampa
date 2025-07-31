@@ -57,6 +57,44 @@ const ActivityTracking = () => {
     suorEarned: 0
   });
   
+  // Manual Timer States (para atividades sem GPS)
+  const [isManualTracking, setIsManualTracking] = useState(false);
+  const [manualDuration, setManualDuration] = useState(0);
+  const manualIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const manualStartTimeRef = useRef<number | null>(null);
+  const manualPausedTimeRef = useRef<number>(0);
+  
+  // Função helper para iniciar timer manual
+  const startManualTimer = () => {
+    console.log('🚀 startManualTimer chamada');
+    
+    // Limpar timer existente
+    if (manualIntervalRef.current) {
+      clearInterval(manualIntervalRef.current);
+      manualIntervalRef.current = null;
+    }
+    
+    // Iniciar novo timer
+    manualIntervalRef.current = setInterval(() => {
+      setManualDuration(prev => {
+        const newDuration = prev + 1;
+        console.log('🟢 TIMER TICK:', newDuration);
+        return newDuration;
+      });
+    }, 1000);
+    
+    console.log('✅ Timer manual iniciado com sucesso');
+  };
+  
+  // Função helper para parar timer manual
+  const stopManualTimer = () => {
+    if (manualIntervalRef.current) {
+      clearInterval(manualIntervalRef.current);
+      manualIntervalRef.current = null;
+      console.log('⏹️ Timer manual parado');
+    }
+  };
+  
   // GPS Tracking avançado
   const {
     gpsStats,
@@ -80,38 +118,195 @@ const ActivityTracking = () => {
   const startTimeRef = useRef<number | null>(null);
   const pausedTimeRef = useRef<number>(0);
   
-  // Usar dados do GPS avançado
-  const isTracking = gpsStats.isTracking;
+  // Determinar tipo de tracking baseado no supports_gps
+  const requiresGPS = activityTypeData?.supports_gps === true; // Explicit comparison
+  const isTracking = requiresGPS ? gpsStats.isTracking : isManualTracking;
+  
+  // Debug logs DETALHADO
+  useEffect(() => {
+    if (activityTypeData) {
+      console.log('🔍 ATIVIDADE DEBUG COMPLETO:', {
+        '1_activityName': activityTypeData.name,
+        '2_supports_gps_RAW': activityTypeData.supports_gps,
+        '3_supports_gps_type': typeof activityTypeData.supports_gps,
+        '4_requiresGPS_CALCULATED': requiresGPS,
+        '5_isManualTracking': isManualTracking,
+        '6_isGPSTracking': gpsStats.isTracking,
+        '7_finalIsTracking': isTracking,
+        '8_activityTypeLoading': activityTypeLoading,
+        '9_TODOS_OS_DADOS': activityTypeData
+      });
+      
+      // Debug específico para Aeróbica
+      if (activityTypeData.name.toLowerCase().includes('aeróbica') || 
+          activityTypeData.name.toLowerCase().includes('aerobica')) {
+        console.log('🔴 AERÓBICA DETECTADA - ANÁLISE ESPECÍFICA:', {
+          'NOME_EXATO': activityTypeData.name,
+          'SUPPORTS_GPS_VALOR': activityTypeData.supports_gps,
+          'DEVE_SER_FALSE': 'Aeróbica deve ter supports_gps = false',
+          'REQUIRES_GPS_RESULTADO': requiresGPS,
+          'PROBLEMA': requiresGPS ? 'ERRO: Aeróbica não deveria precisar de GPS!' : 'OK: Aeróbica não precisa de GPS'
+        });
+      }
+    } else {
+      console.log('⚠️ ActivityTypeData não carregado ainda:', { 
+        activityTypeLoading, 
+        activityTypeId 
+      });
+    }
+  }, [activityTypeData, requiresGPS, isManualTracking, gpsStats.isTracking, isTracking, activityTypeLoading]);
+
+  // Obter localização atual sempre (para mostrar no mapa mesmo em atividades manuais)
+  useEffect(() => {
+    const getCurrentLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const newLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              timestamp: Date.now()
+            };
+            
+            console.log('📍 Localização atual obtida:', newLocation);
+            setCurrentLocation(newLocation);
+          },
+          (error) => {
+            console.warn('⚠️ Erro ao obter localização:', error);
+            // Fallback para localização padrão (centro de São Paulo)
+            setCurrentLocation({
+              lat: -23.5505,
+              lng: -46.6333,
+              timestamp: Date.now()
+            });
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 60000 // Cache por 1 minuto
+          }
+        );
+      } else {
+        console.warn('⚠️ Geolocalização não suportada');
+        // Fallback para centro de São Paulo
+        setCurrentLocation({
+          lat: -23.5505,
+          lng: -46.6333,
+          timestamp: Date.now()
+        });
+      }
+    };
+
+    // Obter localização imediatamente
+    getCurrentLocation();
+
+    // Para atividades manuais, atualizar localização a cada 2 minutos
+    let locationInterval: NodeJS.Timeout | null = null;
+    if (!requiresGPS && isTracking) {
+      locationInterval = setInterval(getCurrentLocation, 120000); // 2 minutos
+    }
+
+    return () => {
+      if (locationInterval) {
+        clearInterval(locationInterval);
+      }
+    };
+  }, [requiresGPS, isTracking]);
 
   // GPS cleanup é gerenciado pelo hook useGPSTracking
 
-  // Sincronizar estatísticas com dados do GPS avançado
+  // Manual Timer Effect (para atividades sem GPS) - VERSÃO ROBUSTA
+  useEffect(() => {
+    console.log('⏱️ Timer Effect V2:', {
+      requiresGPS,
+      isManualTracking,
+      isPaused,
+      shouldStartTimer: !requiresGPS && isManualTracking && !isPaused,
+      hasInterval: !!manualIntervalRef.current
+    });
+    
+    // Limpar interval existente primeiro
+    if (manualIntervalRef.current) {
+      console.log('🧹 Limpando interval existente');
+      clearInterval(manualIntervalRef.current);
+      manualIntervalRef.current = null;
+    }
+    
+    // Iniciar timer apenas se:
+    // 1. Não requer GPS
+    // 2. Está em tracking manual
+    // 3. Não está pausado
+    if (!requiresGPS && isManualTracking && !isPaused) {
+      console.log('🚀 INICIANDO Timer Manual - Condições atendidas!');
+      
+      manualIntervalRef.current = setInterval(() => {
+        setManualDuration(prev => {
+          const newDuration = prev + 1;
+          console.log('⏱️ TICK:', newDuration, 'segundos');
+          return newDuration;
+        });
+      }, 1000);
+      
+      console.log('✅ Timer manual criado com ID:', manualIntervalRef.current);
+    } else {
+      console.log('⛔ Timer NÃO iniciado. Razões:', {
+        requiresGPS: requiresGPS ? 'PRECISA GPS' : 'NÃO PRECISA GPS',
+        isManualTracking: isManualTracking ? 'TRACKING ATIVO' : 'TRACKING INATIVO',
+        isPaused: isPaused ? 'PAUSADO' : 'NÃO PAUSADO'
+      });
+    }
+    
+    // Cleanup function
+    return () => {
+      if (manualIntervalRef.current) {
+        console.log('🧹 Cleanup: removendo timer manual');
+        clearInterval(manualIntervalRef.current);
+        manualIntervalRef.current = null;
+      }
+    };
+  }, [requiresGPS, isManualTracking, isPaused]);
+
+  // Sincronizar estatísticas (GPS ou Manual)
   useEffect(() => {
     if (activityTypeData && isTracking) {
-      const durationMinutes = gpsStats.duration / 60;
+      let currentDuration, currentDistance, currentPace;
+      
+      if (requiresGPS) {
+        // Usar dados do GPS
+        currentDuration = gpsStats.duration;
+        currentDistance = gpsStats.totalDistance;
+        currentPace = gpsStats.pace;
+        
+        // Atualizar localização atual para compatibilidade
+        if (gpsStats.currentPosition) {
+          setCurrentLocation({
+            lat: gpsStats.currentPosition.latitude,
+            lng: gpsStats.currentPosition.longitude,
+            timestamp: gpsStats.currentPosition.timestamp
+          });
+        }
+      } else {
+        // Usar timer manual
+        currentDuration = manualDuration;
+        currentDistance = 0; // Atividades sem GPS não têm distância
+        currentPace = 0; // Sem pace para atividades estáticas
+      }
+      
+      const durationMinutes = currentDuration / 60;
       const baseRate = activityTypeData.base_suor_per_minute;
       const multiplier = activityTypeData.intensity_multiplier || 1;
-      const distanceBonus = gpsStats.totalDistance > 0 ? (gpsStats.totalDistance / 1000) * 2 : 0; // 2 SUOR por km
+      const distanceBonus = currentDistance > 0 ? (currentDistance / 1000) * 2 : 0; // 2 SUOR por km
       
       const suorEarned = Math.floor((baseRate * durationMinutes * multiplier) + distanceBonus);
       
       setStats({
-        duration: gpsStats.duration,
-        distance: gpsStats.totalDistance,
-        pace: gpsStats.pace,
+        duration: currentDuration,
+        distance: currentDistance,
+        pace: currentPace,
         suorEarned
       });
-      
-      // Atualizar localização atual para compatibilidade
-      if (gpsStats.currentPosition) {
-        setCurrentLocation({
-          lat: gpsStats.currentPosition.latitude,
-          lng: gpsStats.currentPosition.longitude,
-          timestamp: gpsStats.currentPosition.timestamp
-        });
-      }
     }
-  }, [gpsStats, activityTypeData, isTracking]);
+  }, [gpsStats, manualDuration, activityTypeData, isTracking, requiresGPS]);
 
   const startTracking = async () => {
     if (!activityTypeData || !user) {
@@ -119,8 +314,27 @@ const ActivityTracking = () => {
       return;
     }
 
-    if (!isGPSAvailable) {
-      toast.error("GPS não disponível neste dispositivo");
+    console.log('🚀 INICIANDO ATIVIDADE - ANÁLISE COMPLETA:', {
+      '1_NOME': activityTypeData.name,
+      '2_SUPPORTS_GPS_RAW': activityTypeData.supports_gps,
+      '3_REQUIRES_GPS_CALC': requiresGPS,
+      '4_IS_GPS_AVAILABLE': isGPSAvailable,
+      '5_DECISION': requiresGPS ? 'VAI USAR GPS' : 'VAI USAR TIMER MANUAL',
+      '6_TODOS_DADOS': activityTypeData
+    });
+    
+    // Alerta específico para Aeróbica
+    if (activityTypeData.name.toLowerCase().includes('aeróbica')) {
+      console.log('🔴 AERÓBICA - VERIFICAÇÃO FINAL:', {
+        'PROBLEMA': requiresGPS ? '😨 ERRO: Aeróbica VAI USAR GPS (ERRADO!)' : '✅ OK: Aeróbica vai usar timer manual',
+        'REQUIRES_GPS': requiresGPS,
+        'SUPPORTS_GPS': activityTypeData.supports_gps
+      });
+    }
+
+    // Verificar GPS apenas se a atividade requer GPS
+    if (requiresGPS && !isGPSAvailable) {
+      toast.error("GPS não disponível para esta atividade");
       return;
     }
 
@@ -139,14 +353,45 @@ const ActivityTracking = () => {
       if (result?.id) {
         setCurrentActivityId(result.id);
         
-        // Iniciar GPS tracking
-        const gpsStarted = startGPSTracking();
-        if (gpsStarted) {
-          startTimeRef.current = Date.now();
-          pausedTimeRef.current = 0;
-          toast.success("Atividade iniciada e GPS ativado!");
+        if (requiresGPS) {
+          // Iniciar GPS tracking
+          const gpsStarted = startGPSTracking();
+          if (gpsStarted) {
+            startTimeRef.current = Date.now();
+            pausedTimeRef.current = 0;
+            toast.success("Atividade iniciada e GPS ativado!");
+          } else {
+            throw new Error('Falha ao iniciar GPS');
+          }
         } else {
-          throw new Error('Falha ao iniciar GPS');
+          // Iniciar timer manual
+          console.log('🚀 INICIANDO ATIVIDADE MANUAL:', activityTypeData.name);
+          
+          // Configurar states
+          setIsManualTracking(true);
+          setManualDuration(0);
+          manualStartTimeRef.current = Date.now();
+          manualPausedTimeRef.current = 0;
+          
+          // Iniciar timer imediatamente
+          startManualTimer();
+          
+          toast.success("✅ Atividade iniciada! Timer ativo.");
+          
+          // Verificar após 3 segundos se está funcionando
+          setTimeout(() => {
+            console.log('🔍 Verificação final (3s):', {
+              manualDuration,
+              isTracking,
+              hasTimer: !!manualIntervalRef.current
+            });
+            
+            // Se não estiver funcionando, tentar novamente
+            if (!manualIntervalRef.current) {
+              console.log('🚑 FALLBACK: Timer não estava ativo, forçando novamente');
+              startManualTimer();
+            }
+          }, 3000);
         }
       } else {
         throw new Error('Falha ao criar atividade');
@@ -159,34 +404,61 @@ const ActivityTracking = () => {
 
   const pauseTracking = () => {
     setIsPaused(!isPaused);
-    if (!isPaused) {
-      // Starting pause
-      pausedTimeRef.current += Date.now() - (startTimeRef.current || Date.now());
+    
+    if (requiresGPS) {
+      // GPS tracking pause logic (mantém o comportamento original)
+      if (!isPaused) {
+        // Starting pause
+        pausedTimeRef.current += Date.now() - (startTimeRef.current || Date.now());
+      } else {
+        // Resuming
+        startTimeRef.current = Date.now();
+      }
     } else {
-      // Resuming
-      startTimeRef.current = Date.now();
+      // Manual tracking pause logic
+      if (!isPaused) {
+        // Starting pause
+        console.log('⏸️ Pausando timer manual');
+        stopManualTimer();
+        manualPausedTimeRef.current += Date.now() - (manualStartTimeRef.current || Date.now());
+      } else {
+        // Resuming  
+        console.log('▶️ Retomando timer manual');
+        manualStartTimeRef.current = Date.now();
+        startManualTimer();
+      }
     }
+    
     toast.info(isPaused ? "Atividade retomada" : "Atividade pausada");
   };
 
   const stopTracking = async () => {
-    // Parar GPS tracking
-    stopGPSTracking();
+    // Parar tracking baseado no tipo
+    if (requiresGPS) {
+      stopGPSTracking();
+    } else {
+      console.log('⏹️ Finalizando atividade manual');
+      stopManualTimer();
+      setIsManualTracking(false);
+    }
+    
     setIsPaused(false);
 
     // Atualizar atividade no Supabase se foi criada
     if (currentActivityId) {
       try {
-        const routeData = exportRouteData();
+        const routeData = requiresGPS ? exportRouteData() : { points: [] };
+        const finalDuration = requiresGPS ? gpsStats.duration : manualDuration;
+        const finalDistance = requiresGPS ? gpsStats.totalDistance : 0;
         
         await updateActivity.mutateAsync({
           activityId: currentActivityId,
           updates: {
             end_time: new Date().toISOString(),
-            duration_minutes: Math.round(gpsStats.duration / 60),
-            distance_km: gpsStats.totalDistance / 1000,
+            duration_minutes: Math.round(finalDuration / 60),
+            distance_km: finalDistance / 1000,
             gps_route: routeData.points.length > 0 ? routeData.points : null,
-            end_location: gpsStats.currentPosition ? {
+            end_location: (requiresGPS && gpsStats.currentPosition) ? {
               lat: gpsStats.currentPosition.latitude,
               lng: gpsStats.currentPosition.longitude
             } : undefined,
@@ -205,7 +477,7 @@ const ActivityTracking = () => {
     navigate("/activity/results", {
       state: {
         stats,
-        route: gpsStats.route,
+        route: requiresGPS ? gpsStats.route : [],
         activityTypeId,
         activityName: activityTypeData?.name || 'Atividade',
         activityData: activityTypeData,
@@ -288,15 +560,17 @@ const ActivityTracking = () => {
           </Card>
         </div>
 
-        {/* GPS Status */}
-        <GPSStatus 
-          gpsStats={gpsStats}
-          accuracy={accuracy}
-          isGPSAvailable={isGPSAvailable}
-          gpsError={gpsError}
-        />
+        {/* GPS Status - Só mostrar para atividades que usam GPS */}
+        {requiresGPS && (
+          <GPSStatus 
+            gpsStats={gpsStats}
+            accuracy={accuracy}
+            isGPSAvailable={isGPSAvailable}
+            gpsError={gpsError}
+          />
+        )}
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Adaptado para GPS vs Manual */}
         <div className="grid grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
@@ -310,35 +584,63 @@ const ActivityTracking = () => {
             <CardContent className="p-4 text-center">
               <Route className="h-6 w-6 mx-auto mb-2 text-green-500" />
               <div className="text-2xl font-bold">
-                {stats.distance < 1000 
-                  ? `${Math.round(stats.distance)}m`
-                  : `${(stats.distance / 1000).toFixed(2)}km`
+                {requiresGPS 
+                  ? (stats.distance < 1000 
+                      ? `${Math.round(stats.distance)}m`
+                      : `${(stats.distance / 1000).toFixed(2)}km`)
+                  : '--'
                 }
               </div>
-              <div className="text-sm text-muted-foreground">Distância</div>
+              <div className="text-sm text-muted-foreground">
+                {requiresGPS ? 'Distância' : 'N/A'}
+              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <Gauge className="h-6 w-6 mx-auto mb-2 text-purple-500" />
-              <div className="text-2xl font-bold">
-                {gpsStats.currentSpeed.toFixed(1)}
-              </div>
-              <div className="text-sm text-muted-foreground">km/h</div>
+              {requiresGPS ? (
+                <>
+                  <Gauge className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+                  <div className="text-2xl font-bold">
+                    {gpsStats.currentSpeed.toFixed(1)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">km/h</div>
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+                  <div className="text-2xl font-bold">
+                    {Math.round(stats.suorEarned)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">SUOR</div>
+                </>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4 text-center">
-              <TrendingUp className="h-6 w-6 mx-auto mb-2 text-orange-500" />
-              <div className="text-2xl font-bold">
-                {stats.pace > 0 && isFinite(stats.pace) 
-                  ? `${Math.floor(stats.pace)}:${String(Math.round((stats.pace % 1) * 60)).padStart(2, '0')}`
-                  : '--:--'
-                }
-              </div>
-              <div className="text-sm text-muted-foreground">min/km</div>
+              {requiresGPS ? (
+                <>
+                  <TrendingUp className="h-6 w-6 mx-auto mb-2 text-orange-500" />
+                  <div className="text-2xl font-bold">
+                    {stats.pace > 0 && isFinite(stats.pace) 
+                      ? `${Math.floor(stats.pace)}:${String(Math.round((stats.pace % 1) * 60)).padStart(2, '0')}`
+                      : '--:--'
+                    }
+                  </div>
+                  <div className="text-sm text-muted-foreground">min/km</div>
+                </>
+              ) : (
+                <>
+                  <Timer className="h-6 w-6 mx-auto mb-2 text-orange-500" />
+                  <div className="text-2xl font-bold">
+                    {activityTypeData?.base_suor_per_minute || 0}/min
+                  </div>
+                  <div className="text-sm text-muted-foreground">Taxa SUOR</div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -349,10 +651,10 @@ const ActivityTracking = () => {
             <Button 
               onClick={startTracking} 
               className="flex-1 h-14 text-lg gap-2"
-              disabled={!isGPSAvailable}
+              disabled={requiresGPS && !isGPSAvailable}
             >
               <Play className="h-5 w-5" />
-              Iniciar Atividade
+              {requiresGPS ? 'Iniciar com GPS' : 'Iniciar Timer'}
             </Button>
           ) : (
             <>

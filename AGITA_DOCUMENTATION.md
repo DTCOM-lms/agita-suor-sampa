@@ -28,16 +28,17 @@ O **Agita** é um aplicativo gamificado que promove saúde, bem-estar e engajame
 
 **Arquivos**: `src/contexts/AuthContext.tsx`, `src/hooks/useProfile.ts`, `TRIGGER_PROFILE_CREATION.sql`
 
-### 🏃‍♂️ Sistema de Atividades CONECTADO AO BACKEND
-- ✅ **150+ atividades reais** carregando do Supabase
-- ✅ **Sistema de dificuldades** baseado no backend (easy/medium/hard)
-- ✅ **Categorização dinâmica** (running, cycling, walking, gym, yoga)
-- ✅ **Cálculo de SUOR estimado** baseado em tipo e duração
-- ✅ **Filtros por categoria** funcionais
-- ✅ **Interface renovada** com ícones e dados reais
+### 🏃‍♂️ Sistema de Atividades COMPLETO COM DADOS REAIS
+- ✅ **35+ atividades implementadas** carregando do Supabase
+- ✅ **Interface completa de seleção** com busca e filtros
+- ✅ **Botão flutuante** para seleção intuitiva
+- ✅ **Sistema GPS inteligente** - GPS para outdoor, timer para indoor
+- ✅ **Interface adaptativa** - blocos GPS só quando necessário
+- ✅ **Dados 100% reais** - contadores baseados em atividades do usuário
+- ✅ **Histórico completo** - página dedicada com busca e filtros
 - ✅ **🎉 ZERO DADOS MOCK** - Tudo conectado ao Supabase
 
-**Arquivos**: `src/components/ActivityCard.tsx`, `src/hooks/useActivityTypes.ts`, `src/pages/Index.tsx`
+**Arquivos**: `src/pages/ActivityStart.tsx`, `src/pages/Activities.tsx`, `src/hooks/useUserStats.ts`, `src/pages/Index.tsx`
 
 ### 🎮 Sistema de Gamificação FUNCIONAL EM TEMPO REAL
 - ✅ **Moeda SUOR** conectada ao banco de dados

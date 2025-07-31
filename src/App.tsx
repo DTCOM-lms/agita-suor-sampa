@@ -36,6 +36,7 @@ import Integrations from "./pages/onboarding/Integrations";
 
 // Other Pages
 import Achievements from "./pages/Achievements";
+import Activities from "./pages/Activities";
 
 const queryClient = new QueryClient();
 
@@ -117,11 +118,16 @@ const App = () => (
                 <ActivityResults />
               </ProtectedRoute>
             } />
-            <Route path="/achievements" element={
-              <ProtectedRoute>
-                <Achievements />
-              </ProtectedRoute>
-            } />
+                            <Route path="/achievements" element={
+                  <ProtectedRoute>
+                    <Achievements />
+                  </ProtectedRoute>
+                } />
+                <Route path="/activities" element={
+                  <ProtectedRoute>
+                    <Activities />
+                  </ProtectedRoute>
+                } />
             
             {/* Protected Admin Routes - Require authentication */}
             <Route path="/admin" element={
