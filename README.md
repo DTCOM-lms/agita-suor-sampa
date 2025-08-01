@@ -98,6 +98,8 @@ bun dev
 - 📊 **Dados Reais** - contadores baseados em atividades reais do usuário
 - 📋 **Histórico Completo** - página dedicada com busca e filtros
 - 💰 **Sistema SUOR 100% Funcional** - creditação automática + saldo sincronizado
+- 🧭 **Navegação Intuitiva** - cards clicáveis + botão Play central
+- 🛒 **Preparação para Marketplace** - seção "Loja" na navegação
 - 🏆 **Sistema de Conquistas** com progress tracking automático
 - 📱 **Feed Social** com likes, comentários e posts automáticos
 

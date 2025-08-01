@@ -1,4 +1,4 @@
-import { Home, Activity, Trophy, Users, Plus } from "lucide-react";
+import { Home, Activity, Trophy, Users, Plus, Play, Store } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,10 +33,10 @@ const MobileBottomNav = () => {
       badge: 3 // Exemplo: 3 novas interações
     },
     {
-      icon: Activity,
-      label: "Atividades",
-      path: "/activities",
-      isActive: location.pathname.startsWith("/activities"),
+      icon: Store,
+      label: "Loja",
+      path: "/store",
+      isActive: location.pathname.startsWith("/store"),
       badge: null
     }
   ];
@@ -66,13 +66,18 @@ const MobileBottomNav = () => {
                   <div key="fab" className="relative">
                     <Button
                       size="lg"
-                      onClick={() => navigate('/activity/start')}
-                      className="h-14 w-14 rounded-full gradient-animation fab-scale shadow-lg hover:shadow-xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🎯 FAB Play button clicked - navigating to /activity/start');
+                        navigate('/activity/start');
+                      }}
+                      className="h-14 w-14 rounded-full gradient-animation fab-scale shadow-lg hover:shadow-xl relative z-10"
                     >
-                      <Plus className="h-6 w-6 text-white" />
+                      <Play className="h-6 w-6 text-white" />
                     </Button>
                     {/* Pulse effect */}
-                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+                    <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping pointer-events-none" />
                   </div>
                 );
               }

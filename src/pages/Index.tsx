@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import MainMap from "@/components/MainMap";
@@ -11,7 +12,6 @@ import {
   Target, 
   Zap, 
   MapPin, 
-  Clock, 
   Route,
   TrendingUp,
   Activity,
@@ -27,7 +27,7 @@ import { useActivityTypes } from '@/hooks/useActivityTypes';
 import { useUserStats } from '@/hooks/useUserStats';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { SuorDebugPanel } from '@/components/SuorDebugPanel';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +43,19 @@ const Index = () => {
   const navigate = useNavigate();
   const { data: socialFeed } = useSocialFeed(5);
   const { data: activityTypes } = useActivityTypes();
-  const { data: userStats } = useUserStats();
+  const { data: userStats, isLoading: userStatsLoading, error: userStatsError } = useUserStats();
+  
+  // Estado para controlar foco no mapa
+  const [focusOnChallenges, setFocusOnChallenges] = useState(false);
+  
+  // Função para centralizar mapa nos desafios
+  const handleFocusChallenges = () => {
+    setFocusOnChallenges(true);
+    // Reset após um pequeno delay para permitir re-trigger
+    setTimeout(() => setFocusOnChallenges(false), 100);
+  };
+
+
 
   const handleLogout = async () => {
     try {
@@ -160,7 +172,9 @@ const Index = () => {
           <div className="flex items-center gap-4 mt-3 text-sm">
             <div className="flex items-center gap-1">
               <Zap className="h-4 w-4" />
-              <span className="font-medium">{Math.round(userStats?.total_suor_earned || 0)}</span>
+              <span className="font-medium">
+                {userStatsLoading ? '...' : Math.round(userStats?.total_suor_earned || 0)}
+              </span>
               <span className="opacity-75">SUOR</span>
             </div>
             <div className="flex items-center gap-1">
@@ -180,8 +194,8 @@ const Index = () => {
       <main className="flex-1 pb-20">
         {/* Stats Cards */}
         <div className="px-4 py-6 mt-4">
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <Card className="stats-blue border-blue-200 card-hover animate-slide-up">
+          <div className="grid grid-cols-3 gap-3">
+            <Card className="stats-blue border-blue-200 card-hover animate-slide-up cursor-pointer" onClick={() => navigate('/activities')}>
               <CardContent className="p-3 text-center">
                 <Activity className="h-5 w-5 text-blue-600 mx-auto mb-1" />
                 <p className="text-xs text-blue-600/70">Atividades</p>
@@ -189,18 +203,24 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="stats-yellow border-yellow-200 card-hover animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <Card className="stats-yellow border-yellow-200 card-hover animate-slide-up cursor-pointer" style={{ animationDelay: '0.1s' }} onClick={() => navigate('/store')}>
               <CardContent className="p-3 text-center">
                 <Zap className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
                 <p className="text-xs text-yellow-600/70">SUOR Total</p>
                 <p className="text-lg font-bold text-yellow-700">
-                  {Math.round(userStats?.total_suor_earned || 0)}
+                  {userStatsLoading ? '...' : Math.round(userStats?.total_suor_earned || 0)}
                 </p>
+                {userStatsError && (
+                  <p className="text-xs text-red-500">Erro ao carregar</p>
+                )}
+                {!userStatsLoading && userStats && (
+                  <p className="text-xs text-gray-500">
+                    {userStats.total_activities} atividades
+                  </p>
+                )}
               </CardContent>
             </Card>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
+
             <Card className="stats-green border-green-200 card-hover animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <CardContent className="p-3 text-center">
                 <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
@@ -213,16 +233,6 @@ const Index = () => {
                 </p>
               </CardContent>
             </Card>
-            
-            <Card className="stats-purple border-purple-200 card-hover animate-slide-up" style={{ animationDelay: '0.3s' }}>
-              <CardContent className="p-3 text-center">
-                <Clock className="h-5 w-5 text-purple-600 mx-auto mb-1" />
-                <p className="text-xs text-purple-600/70">Tempo</p>
-                <p className="text-lg font-bold text-purple-700">
-                  {Math.round((userStats?.total_duration_minutes || 0) / 60)}h
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
 
@@ -230,14 +240,18 @@ const Index = () => {
         <div className="px-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-semibold">Explore São Paulo</h2>
-            <Badge variant="secondary" className="text-xs">
+            <Badge 
+              variant="secondary" 
+              className="text-xs cursor-pointer hover:bg-secondary/80 transition-colors" 
+              onClick={handleFocusChallenges}
+            >
               <MapPin className="h-3 w-3 mr-1" />
               3 desafios próximos
             </Badge>
           </div>
           <Card className="overflow-hidden card-hover">
             <div className="h-80 relative">
-              <MainMap className="absolute inset-0 h-full w-full" />
+              <MainMap className="absolute inset-0 h-full w-full" focusOnChallenges={focusOnChallenges} />
               <div className="absolute top-3 right-3">
                 <Button size="sm" variant="secondary" className="h-8 glass">
                   <Target className="h-4 w-4 mr-1" />
@@ -320,7 +334,6 @@ const Index = () => {
       </main>
 
       <MobileBottomNav />
-      <SuorDebugPanel />
     </div>
   );
 };

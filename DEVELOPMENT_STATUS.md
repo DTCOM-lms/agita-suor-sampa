@@ -1230,6 +1230,115 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 #### **🎯 RESULTADO FINAL:**
 **O Sistema SUOR está 100% funcional, testado e pronto para produção, oferecendo experiência completa de gamificação sem erros ou inconsistências.**
 
+### **✅ v0.2.11 - Interface Otimizada (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🎨 **MELHORIA DE LAYOUT: Interface Principal Mais Limpa**
+
+**🧹 SIMPLIFICAÇÃO DA INTERFACE**
+- ✅ **Card de Tempo removido** da página principal
+- ✅ **3 cards essenciais** mantidos: Atividades, SUOR Total, Distância
+- ✅ **Layout linear** - todos os cards em uma única linha (grid-cols-3)
+- ✅ **Interface mais limpa** sem informações redundantes
+
+**📱 MELHORIAS DE UX**
+- ✅ **Menos visual clutter** na página principal
+- ✅ **Foco nas métricas principais** que importam para o usuário
+- ✅ **Design mais equilibrado** com 3 cards alinhados
+- ✅ **Responsividade mantida** para diferentes tamanhos de tela
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Interface mais limpa** e focada nas métricas essenciais
+- ✅ **3 cards alinhados** horizontalmente para melhor aproveitamento do espaço
+- ✅ **Experiência visual** otimizada e menos sobrecarregada
+- ✅ **Performance melhorada** com menos elementos renderizados
+
+### **✅ v0.2.12 - Melhorias de Navegação UX (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🧭 **NAVEGAÇÃO INTUITIVA: Melhor Experiência do Usuário**
+
+**🖱️ CARD INTERATIVO**
+- ✅ **Card "Atividades" clicável** - navega diretamente para página de histórico
+- ✅ **Cursor pointer** para indicar interatividade
+- ✅ **Transição suave** para página /activities
+
+**🎯 BOTÃO CENTRAL APRIMORADO**
+- ✅ **Ícone "+" trocado por "Play"** - mais intuitivo para iniciar atividades
+- ✅ **Navegação direta** para seleção de atividades (/activity/start)
+- ✅ **FAB redesenhado** com ícone mais representativo
+
+**🛒 BARRA INFERIOR ATUALIZADA**
+- ✅ **"Atividades" substituído por "Loja"** na navegação inferior
+- ✅ **Ícone Store** integrado para futuro marketplace
+- ✅ **Preparação para sistema de recompensas** SUOR
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Navegação mais intuitiva** com cards clicáveis
+- ✅ **Botão central** com significado visual claro (Play = iniciar)
+- ✅ **Preparação para marketplace** com item "Loja"
+- ✅ **UX aprimorada** com menos fricção de navegação
+
+### **✅ v0.2.13 - Navegação Interativa Avançada (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🎯 **INTERATIVIDADE COMPLETA: Cards e Mapa Responsivos**
+
+**🖱️ CARDS INTELIGENTES**
+- ✅ **Card SUOR clicável** - navega para loja/marketplace (/store)
+- ✅ **Card Atividades clicável** - navega para histórico (/activities)
+- ✅ **Feedback visual** com cursor pointer e hover effects
+
+**🗺️ MAPA INTERATIVO**
+- ✅ **Badge "desafios próximos" clicável** - centraliza mapa nos desafios
+- ✅ **Centralização inteligente** - fitBounds para múltiplos ou flyTo para único
+- ✅ **Animação suave** com duração de 1.5s para transições
+- ✅ **Zoom automático** otimizado (15 para único, 16 max para múltiplos)
+
+**🎮 BOTÃO PLAY FUNCIONAL**
+- ✅ **Navegação confirmada** - direciona para /activity/start
+- ✅ **Ícone intuitivo** - Play representa "iniciar atividade"
+- ✅ **FAB central** com animações e efeitos visuais
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Navegação 100% funcional** em todos os elementos interativos
+- ✅ **Mapa responsivo** com centralização dinâmica nos desafios
+- ✅ **Cards conectados** - SUOR→Loja, Atividades→Histórico
+- ✅ **UX completa** sem elementos decorativos ou não-funcionais
+
+### **✅ v0.2.14 - Correção Navegação Botão Play (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🔧 **CORREÇÃO CRÍTICA: FAB Play Button Navigation**
+
+**🐛 PROBLEMA IDENTIFICADO:**
+- ✅ **Botão Play central** não estava navegando para `/activity/start`
+- ✅ **Event handling** interferido por elementos sobrepostos
+- ✅ **Z-index conflicts** com efeito de pulse animation
+
+**🛠️ SOLUÇÕES IMPLEMENTADAS:**
+- ✅ **Event handling robusto** - `preventDefault()` e `stopPropagation()`
+- ✅ **Z-index explícito** - `relative z-10` no botão
+- ✅ **Pointer events disabled** - `pointer-events-none` no efeito pulse
+- ✅ **Debug logging** - Console log para confirmar cliques
+
+**🎯 CORREÇÕES APLICADAS:**
+```typescript
+onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  console.log('🎯 FAB Play button clicked - navigating to /activity/start');
+  navigate('/activity/start');
+}}
+className="h-14 w-14 rounded-full gradient-animation fab-scale shadow-lg hover:shadow-xl relative z-10"
+```
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Botão Play 100% funcional** - navega corretamente para seleção de atividades
+- ✅ **Event handling robusto** - sem interferências de elementos sobrepostos
+- ✅ **Debug capabilities** - logs para monitoramento de cliques
+- ✅ **UX consistente** - navegação fluida e responsiva
+
 ### **✅ v0.2.9 - Sistema SUOR Totalmente Sincronizado (CONCLUÍDO!)**
 **Data**: Janeiro 2025
 

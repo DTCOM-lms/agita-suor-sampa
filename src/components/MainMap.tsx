@@ -12,9 +12,10 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface MainMapProps {
   className?: string;
+  focusOnChallenges?: boolean;
 }
 
-const MainMap: React.FC<MainMapProps> = ({ className = "" }) => {
+const MainMap: React.FC<MainMapProps> = ({ className = "", focusOnChallenges = false }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedPin, setSelectedPin] = useState<any>(null);
@@ -177,6 +178,39 @@ const MainMap: React.FC<MainMapProps> = ({ className = "" }) => {
     });
 
   }, [challenges, mapLoaded]);
+
+  // Centralizar mapa nos desafios quando solicitado
+  useEffect(() => {
+    if (!map.current || !mapLoaded || !focusOnChallenges || !challenges?.length) return;
+
+    console.log('🎯 Centralizando mapa nos desafios...');
+    
+    // Calcular bounds dos desafios
+    const bounds = new mapboxgl.LngLatBounds();
+    
+    challenges.forEach(challenge => {
+      if (challenge.location) {
+        bounds.extend([challenge.location.lng, challenge.location.lat]);
+      }
+    });
+
+    // Se há apenas um desafio, usar flyTo com zoom específico
+    if (challenges.length === 1 && challenges[0].location) {
+      map.current.flyTo({
+        center: [challenges[0].location.lng, challenges[0].location.lat],
+        zoom: 15,
+        duration: 1500
+      });
+    } else {
+      // Múltiplos desafios, usar fitBounds
+      map.current.fitBounds(bounds, {
+        padding: 50,
+        duration: 1500,
+        maxZoom: 16
+      });
+    }
+    
+  }, [focusOnChallenges, challenges, mapLoaded]);
 
   // Fallback se não conseguir carregar Mapbox
   if (!env.mapbox.accessToken) {

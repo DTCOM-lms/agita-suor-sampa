@@ -75,6 +75,21 @@ Este documento lista todos os scripts SQL essenciais do projeto e suas funções
 - ✅ **Roadmap futuro** e melhorias planejadas
 - ✅ **Status final: 100% funcional** com todas as funcionalidades
 
+#### `SYNC_CURRENT_USER_SUOR.sql` 🚨 **CORREÇÃO RÁPIDA**
+**Função**: Script específico para corrigir inconsistência de SUOR do usuário atual
+- ✅ **Sincronização individual** - só para o usuário logado
+- ✅ **Verificação antes/depois** com status claro
+- ✅ **Correção automática** de profile.current_suor
+- ✅ **Solução rápida** para inconsistências pontuais
+- ✅ **Uso de auth.uid()** - apenas dados do usuário atual
+
+#### `VERIFY_SUOR_FIXED.sql` ✅ **VERIFICAÇÃO FINAL**
+**Função**: Script para confirmar que a inconsistência foi corrigida
+- ✅ **Verificação pós-correção** - confirma sincronização
+- ✅ **Status claro** - mostra se está sincronizado
+- ✅ **Execução rápida** - apenas uma consulta
+- ✅ **Resultado esperado** - diferença = 0 e status ✅ SINCRONIZADO
+
 ### **👥 Scripts do Sistema Social**
 
 #### `SOCIAL_FUNCTIONS.sql`
