@@ -37,6 +37,7 @@ import Integrations from "./pages/onboarding/Integrations";
 // Other Pages
 import Achievements from "./pages/Achievements";
 import Activities from "./pages/Activities";
+import Store from "./pages/Store";
 
 const queryClient = new QueryClient();
 
@@ -126,6 +127,11 @@ const App = () => (
                 <Route path="/activities" element={
                   <ProtectedRoute>
                     <Activities />
+                  </ProtectedRoute>
+                } />
+                <Route path="/store" element={
+                  <ProtectedRoute>
+                    <Store />
                   </ProtectedRoute>
                 } />
             

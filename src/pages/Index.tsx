@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSocialFeed } from '@/hooks/useSocialFeed';
 import { useActivityTypes } from '@/hooks/useActivityTypes';
 import { useUserStats } from '@/hooks/useUserStats';
+import { useProfile } from '@/hooks/useProfile';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -44,6 +45,7 @@ const Index = () => {
   const { data: socialFeed } = useSocialFeed(5);
   const { data: activityTypes } = useActivityTypes();
   const { data: userStats, isLoading: userStatsLoading, error: userStatsError } = useUserStats();
+  const { data: profileData, isLoading: profileLoading } = useProfile();
   
   // Estado para controlar foco no mapa
   const [focusOnChallenges, setFocusOnChallenges] = useState(false);
@@ -120,7 +122,7 @@ const Index = () => {
                       <div className="flex items-center gap-2 mt-2 pt-2 border-t">
                         <div className="flex items-center gap-1 text-xs">
                           <Zap className="h-3 w-3 text-yellow-500" />
-                          <span className="font-medium">{Math.round(userStats?.total_suor_earned || 0)} SUOR</span>
+                          <span className="font-medium">{Math.round(profileData?.current_suor || profile?.current_suor || 0)} SUOR</span>
                         </div>
                         <div className="flex items-center gap-1 text-xs">
                           <Trophy className="h-3 w-3 text-blue-500" />
@@ -173,7 +175,7 @@ const Index = () => {
             <div className="flex items-center gap-1">
               <Zap className="h-4 w-4" />
               <span className="font-medium">
-                {userStatsLoading ? '...' : Math.round(userStats?.total_suor_earned || 0)}
+                {profileLoading ? '...' : Math.round(profileData?.current_suor || profile?.current_suor || 0)}
               </span>
               <span className="opacity-75">SUOR</span>
             </div>
@@ -206,16 +208,13 @@ const Index = () => {
             <Card className="stats-yellow border-yellow-200 card-hover animate-slide-up cursor-pointer" style={{ animationDelay: '0.1s' }} onClick={() => navigate('/store')}>
               <CardContent className="p-2.5 text-center">
                 <Zap className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
-                <p className="text-xs text-yellow-600/70">SUOR Total</p>
+                <p className="text-xs text-yellow-600/70">Saldo SUOR</p>
                 <p className="text-base font-bold text-yellow-700">
-                  {userStatsLoading ? '...' : Math.round(userStats?.total_suor_earned || 0)}
+                  {profileLoading ? '...' : Math.round(profileData?.current_suor || profile?.current_suor || 0)}
                 </p>
-                {userStatsError && (
-                  <p className="text-xs text-red-500">Erro ao carregar</p>
-                )}
-                {!userStatsLoading && userStats && (
+                {!profileLoading && userStats && (
                   <p className="text-xs text-gray-500">
-                    {userStats.total_activities} atividades
+                    {Math.round(userStats.total_suor_earned || 0)} ganhos
                   </p>
                 )}
               </CardContent>
