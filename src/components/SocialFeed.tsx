@@ -36,14 +36,12 @@ interface SocialPost {
       category: string;
     };
   };
-  user_achievements?: {
-    achievements?: {
-      name: string;
-      description: string;
-      rarity: string;
-      suor_reward: number;
-    };
-  }[];
+  achievements?: {
+    name: string;
+    description: string;
+    rarity: string;
+    suor_reward: number;
+  };
 }
 
 interface FeedItemProps {
@@ -77,7 +75,7 @@ const FeedItem = ({ post }: FeedItemProps) => {
         return 'Completou uma atividade';
       
       case 'achievement_unlocked':
-        const achievement = post.user_achievements?.[0]?.achievements;
+        const achievement = post.achievements;
         if (achievement) {
           return `Desbloqueou a conquista: ${achievement.name}`;
         }
@@ -129,7 +127,7 @@ const FeedItem = ({ post }: FeedItemProps) => {
   };
 
   const suorEarned = post.activities?.suor_earned || 
-                    post.user_achievements?.[0]?.achievements?.suor_reward || 
+                    post.achievements?.suor_reward || 
                     0;
 
   return (
@@ -198,14 +196,14 @@ const FeedItem = ({ post }: FeedItemProps) => {
         )}
 
         {/* Achievement Details */}
-        {post.post_type === 'achievement_unlocked' && post.user_achievements?.[0]?.achievements && (
+        {post.post_type === 'achievement_unlocked' && post.achievements && (
           <div className="mb-4 p-3 bg-warning/5 rounded-lg border border-warning/20">
             <div className="flex items-center gap-2 mb-1">
               <Trophy className="h-4 w-4 text-warning" />
-              <span className="font-semibold text-sm">{post.user_achievements[0].achievements.name}</span>
+              <span className="font-semibold text-sm">{post.achievements.name}</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              {post.user_achievements[0].achievements.description}
+              {post.achievements.description}
             </p>
           </div>
         )}

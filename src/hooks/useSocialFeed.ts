@@ -36,14 +36,12 @@ interface SocialPost {
       category: string;
     };
   };
-  user_achievements?: {
-    achievements?: {
-      name: string;
-      description: string;
-      rarity: string;
-      suor_reward: number;
-    };
-  }[];
+  achievements?: {
+    name: string;
+    description: string;
+    rarity: string;
+    suor_reward: number;
+  };
 }
 
 interface PostLike {
@@ -93,8 +91,8 @@ export const useSocialFeed = (limit = 20) => {
             id, title, duration_minutes, distance_km, suor_earned,
             activity_types(name, category)
           ),
-          user_achievements(
-            achievements(name, description, rarity, suor_reward)
+          achievements(
+            name, description, rarity, suor_reward
           )
         `)
         .eq('visibility', 'public')
