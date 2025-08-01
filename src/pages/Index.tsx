@@ -193,21 +193,21 @@ const Index = () => {
       {/* Main Content */}
       <main className="flex-1 pb-20">
         {/* Stats Cards */}
-        <div className="px-4 py-6 mt-4">
+        <div className="px-4 py-4 mt-4">
           <div className="grid grid-cols-3 gap-3">
             <Card className="stats-blue border-blue-200 card-hover animate-slide-up cursor-pointer" onClick={() => navigate('/activities')}>
-              <CardContent className="p-3 text-center">
-                <Activity className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+              <CardContent className="p-2.5 text-center">
+                <Activity className="h-4 w-4 text-blue-600 mx-auto mb-1" />
                 <p className="text-xs text-blue-600/70">Atividades</p>
-                <p className="text-lg font-bold text-blue-700">{userStats?.total_activities || 0}</p>
+                <p className="text-base font-bold text-blue-700">{userStats?.total_activities || 0}</p>
               </CardContent>
             </Card>
             
             <Card className="stats-yellow border-yellow-200 card-hover animate-slide-up cursor-pointer" style={{ animationDelay: '0.1s' }} onClick={() => navigate('/store')}>
-              <CardContent className="p-3 text-center">
-                <Zap className="h-5 w-5 text-yellow-600 mx-auto mb-1" />
+              <CardContent className="p-2.5 text-center">
+                <Zap className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
                 <p className="text-xs text-yellow-600/70">SUOR Total</p>
-                <p className="text-lg font-bold text-yellow-700">
+                <p className="text-base font-bold text-yellow-700">
                   {userStatsLoading ? '...' : Math.round(userStats?.total_suor_earned || 0)}
                 </p>
                 {userStatsError && (
@@ -222,10 +222,10 @@ const Index = () => {
             </Card>
 
             <Card className="stats-green border-green-200 card-hover animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <CardContent className="p-3 text-center">
-                <Route className="h-5 w-5 text-green-600 mx-auto mb-1" />
+              <CardContent className="p-2.5 text-center">
+                <Route className="h-4 w-4 text-green-600 mx-auto mb-1" />
                 <p className="text-xs text-green-600/70">Distância</p>
-                <p className="text-lg font-bold text-green-700">
+                <p className="text-base font-bold text-green-700">
                   {(userStats?.total_distance_km || 0) < 1 
                     ? `${Math.round((userStats?.total_distance_km || 0) * 1000)}m`
                     : `${(userStats?.total_distance_km || 0).toFixed(1)}km`
@@ -250,7 +250,7 @@ const Index = () => {
             </Badge>
           </div>
           <Card className="overflow-hidden card-hover">
-            <div className="h-80 relative">
+            <div className="h-96 relative">
               <MainMap className="absolute inset-0 h-full w-full" focusOnChallenges={focusOnChallenges} />
               <div className="absolute top-3 right-3">
                 <Button size="sm" variant="secondary" className="h-8 glass">

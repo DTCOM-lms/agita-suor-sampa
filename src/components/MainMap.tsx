@@ -255,23 +255,23 @@ const MainMap: React.FC<MainMapProps> = ({ className = "", focusOnChallenges = f
 
       {/* Selected pin details */}
       {selectedPin && selectedPin.data && (
-        <Card className="absolute bottom-4 left-4 right-4 z-20 max-w-sm mx-auto bg-white shadow-xl">
+        <Card className="absolute top-16 left-4 right-4 z-20 max-w-sm mx-auto bg-white shadow-xl max-h-72 overflow-y-auto">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-orange-500" />
-                <CardTitle className="text-lg">{selectedPin.data.title}</CardTitle>
+                <CardTitle className="text-lg leading-tight">{selectedPin.data.title}</CardTitle>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => setSelectedPin(null)}
-                className="h-8 w-8 p-0 hover:bg-gray-100"
+                className="h-8 w-8 p-0 hover:bg-gray-100 flex-shrink-0"
               >
                 ✕
               </Button>
             </div>
-            <CardDescription className="text-sm">{selectedPin.data.description}</CardDescription>
+            <CardDescription className="text-sm leading-relaxed">{selectedPin.data.description}</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="flex flex-wrap gap-2 mb-3">

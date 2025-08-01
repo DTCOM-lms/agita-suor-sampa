@@ -1339,6 +1339,42 @@ className="h-14 w-14 rounded-full gradient-animation fab-scale shadow-lg hover:s
 - ✅ **Debug capabilities** - logs para monitoramento de cliques
 - ✅ **UX consistente** - navegação fluida e responsiva
 
+### **✅ v0.2.15 - Otimização Interface Mapa e Desafios (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🗺️ **MELHORIA CRÍTICA: Visualização Completa dos Desafios**
+
+**🐛 PROBLEMA IDENTIFICADO:**
+- ✅ **Cards de desafios cortados** no mapa quando clicados
+- ✅ **Popup na parte inferior** conflitando com altura limitada
+- ✅ **Informações ilegíveis** por falta de espaço
+
+**🛠️ SOLUÇÕES IMPLEMENTADAS:**
+
+**📏 OTIMIZAÇÃO 1: Cards de Estatísticas Compactos**
+- ✅ **Padding reduzido** - `py-6` → `py-4` (-16px vertical)
+- ✅ **Ícones menores** - `h-5 w-5` → `h-4 w-4` para melhor proporção
+- ✅ **Padding interno** - `p-3` → `p-2.5` para otimização de espaço
+- ✅ **Fonte otimizada** - `text-lg` → `text-base` para consistência
+
+**🗺️ OTIMIZAÇÃO 2: Mapa Expandido**
+- ✅ **Altura aumentada** - `h-80` (320px) → `h-96` (384px) (+64px)
+- ✅ **Mais espaço visual** para interação com desafios
+- ✅ **Melhor proporção** com o resto da interface
+
+**🎯 OTIMIZAÇÃO 3: Popup de Desafios Inteligente**
+- ✅ **Posicionamento superior** - `bottom-4` → `top-16` 
+- ✅ **Altura máxima controlada** - `max-h-72` (288px) com scroll
+- ✅ **Overflow inteligente** - `overflow-y-auto` para conteúdo longo
+- ✅ **Melhor legibilidade** - `leading-tight` e `leading-relaxed` otimizados
+- ✅ **Botão X otimizado** - `flex-shrink-0` para sempre visível
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Desafios 100% legíveis** - card completo sempre visível
+- ✅ **Interface otimizada** - melhor aproveitamento do espaço
+- ✅ **Mapa expandido** - 20% mais área para interação
+- ✅ **UX aprimorada** - navegação fluida sem elementos cortados
+
 ### **✅ v0.2.9 - Sistema SUOR Totalmente Sincronizado (CONCLUÍDO!)**
 **Data**: Janeiro 2025
 
