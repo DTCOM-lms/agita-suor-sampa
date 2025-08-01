@@ -3,18 +3,18 @@
 ## 📋 **VISÃO GERAL DO PROJETO**
 
 **Nome**: Agita - São Paulo  
-**Versão**: v1.0 MVP Enterprise-Ready  
+**Versão**: v1.0 MVP Enterprise-Ready + Marketplace  
 **Estado**: ✅ **MVP COMPLETO IMPLEMENTADO**  
 **Última atualização**: Janeiro 2025
 
 ### **📝 Descrição**
-Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, feed social em tempo real e marketplace de recompensas.
+Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, feed social em tempo real e **marketplace funcional** onde usuários podem trocar SUOR por recompensas reais de parceiros locais.
 
 ### **🎯 Objetivos Principais**
 - **Gamificação fitness** com sistema de recompensas SUOR
 - **Tracking GPS avançado** para atividades físicas  
 - **Sistema social** com feed, likes, comentários e conquistas
-- **Marketplace de recompensas** integrado
+- **Marketplace SUOR funcional** com 8+ recompensas de parceiros reais
 - **Analytics em tempo real** de performance e engajamento
 
 ---
@@ -120,6 +120,7 @@ agita-suor-sampa/
 │   │   ├── Header.tsx           # ✅ Header com dados reais do usuário
 │   │   ├── SocialFeed.tsx       # ✅ Feed social completo
 │   │   ├── SuorDisplay.tsx      # ✅ Exibição de SUOR e transações
+│   │   ├── RewardCard.tsx       # ✅ Card de recompensas marketplace
 │   │   └── MobileBottomNav.tsx  # Navegação mobile
 │   │
 │   ├── 📁 pages/               # Páginas da aplicação
@@ -140,13 +141,16 @@ agita-suor-sampa/
 │   │   ├── ActivityTracking.tsx # ✅ Tracking GPS avançado
 │   │   ├── Achievements.tsx     # ✅ Página de conquistas
 │   │   ├── ActivityResults.tsx  # Resultados pós-atividade
+│   │   ├── Store.tsx           # ✅ Marketplace SUOR completo
+│   │   ├── Profile.tsx         # ✅ Página de perfil com edição completa
 │   │   └── NotFound.tsx
 │   │
-│   ├── 📁 hooks/              # ✅ React Hooks customizados (15+)
+│   ├── 📁 hooks/              # ✅ React Hooks customizados (20+)
 │   │   ├── useProfile.ts       # ✅ Gerenciamento de perfil
 │   │   ├── useActivityTypes.ts # ✅ Tipos de atividades do Supabase
 │   │   ├── useActivities.ts    # ✅ CRUD completo de atividades
 │   │   ├── useSuor.ts         # ✅ Sistema SUOR e transações
+│   │   ├── useRewards.ts      # ✅ Marketplace e recompensas (8 hooks)
 │   │   ├── useAchievements.ts  # ✅ Sistema de conquistas
 │   │   ├── useSocialFeed.ts   # ✅ Feed social e interações
 │   │   ├── useGPSTracking.ts  # ✅ GPS tracking avançado
@@ -158,7 +162,7 @@ agita-suor-sampa/
 │   │   └── AchievementNotificationContext.tsx # ✅ Notificações globais
 │   │
 │   ├── 📁 lib/               # Utilitários e configurações
-│   │   ├── utils.ts          # Funções utilitárias (cn, etc)
+│   │   ├── utils.ts          # Funções utilitárias (cn, formatCurrency)
 │   │   └── validations.ts    # Schemas Zod para validação
 │   │
 │   ├── 📁 config/            # ✅ Configurações da aplicação
@@ -330,6 +334,19 @@ app_analytics         -- ✅ Métricas globais da aplicação
 - [x] ✅ Funções SQL para cálculo automático
 - [x] ✅ SuorDisplay com saldo e transações
 - [x] ✅ Integração com conquistas e atividades
+- [x] ✅ Discrepância de valores corrigida (v0.2.16)
+
+#### **🛍️ MARKETPLACE SUOR COMPLETO**
+- [x] ✅ Página Store.tsx com interface rica
+- [x] ✅ Hook useRewards com 8 funções especializadas
+- [x] ✅ Componente RewardCard com modo compacto/completo
+- [x] ✅ Sistema de categorias com filtros em tempo real
+- [x] ✅ 8 recompensas reais de parceiros de São Paulo
+- [x] ✅ Fluxo de resgate com validações automáticas
+- [x] ✅ Códigos únicos de resgate gerados
+- [x] ✅ Histórico pessoal de recompensas
+- [x] ✅ Estatísticas detalhadas de gastos
+- [x] ✅ Integração completa com sistema SUOR
 
 #### **🗺️ GPS TRACKING INTELIGENTE**
 - [x] ✅ useGPSTracking hook com precisão profissional
@@ -693,10 +710,10 @@ export const useSocialFeed = (limit = 20) => {
 
 ```typescript
 Frontend React/TypeScript:
-├── 📁 55+ arquivos TypeScript     // Componentes, hooks, pages
-├── 🧩 17+ React Hooks customizados // Especializados por domínio + useUserStats
-├── 🎨 32+ Componentes React       // Reutilizáveis e tipados
-├── 📄 12+ Páginas completas       // Rotas funcionais + Activities page
+├── 📁 59+ arquivos TypeScript     // Componentes, hooks, pages + Profile
+├── 🧩 20+ React Hooks customizados // Especializados por domínio + useImageUpload
+├── 🎨 34+ Componentes React       // Reutilizáveis e tipados + upload features
+├── 📄 14+ Páginas completas       // Rotas funcionais + Profile page
 ├── ⚙️ 5+ Contextos globais        // Estado compartilhado
 ├── 🔍 Sistema de busca completo   // Filtros, pesquisa e histórico
 ├── 📊 Dados 100% reais           // Estatísticas baseadas no usuário
@@ -744,6 +761,7 @@ Advanced Features (100% Complete):
   Statistics Engine: ✅ Complete (Real-time calculation from user data)
   Achievements: ✅ Complete (Auto-unlock + notifications)
   Social Feed: ✅ Complete (Posts, likes, comments)
+  Marketplace SUOR: ✅ Complete (Full store with real rewards)
   Real-time Updates: ✅ Complete (TanStack Query sync)
   
 UI/UX Excellence (100% Complete):
@@ -790,6 +808,8 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 - ✅ **Frontend React moderno** com TypeScript 100%
 - ✅ **Backend Supabase completo** com PostgreSQL + PostGIS
 - ✅ **Sistema de gamificação funcional** (SUOR, níveis, conquistas)
+- ✅ **Marketplace SUOR completo** com recompensas reais de parceiros
+- ✅ **Sistema de perfil completo** com edição de dados e upload de avatar
 - ✅ **GPS tracking de precisão profissional**
 - ✅ **Feed social em tempo real** com interações
 - ✅ **Performance otimizada** para dispositivos móveis
@@ -977,16 +997,248 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 - [ ] Feed dinâmico
 - [ ] Gamificação avançada
 
-### M4: Marketplace (8 semanas)
-- [ ] Catálogo de recompensas
-- [ ] Sistema de resgate
-- [ ] Parcerias iniciais
+### M4: Marketplace ✅ CONCLUÍDO
+- [x] Catálogo de recompensas (8 recompensas ativas)
+- [x] Sistema de resgate (fluxo completo funcional)
+- [x] Parcerias iniciais (Smart Fit, Bike Sampa, Cinemark, etc.)
 
 ---
 
 ---
 
 ## 📝 **CHANGELOG - IMPLEMENTAÇÕES RECENTES**
+
+### **✅ v0.2.20 - Sincronização de Avatar Corrigida (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🖼️ **CORREÇÃO CRÍTICA: AVATAR CONSISTENTE ENTRE PÁGINAS**
+
+**🎯 PROBLEMA RESOLVIDO:**
+Avatar na página de perfil estava usando apenas `profile.avatar_url`, enquanto a página principal usava fallbacks do OAuth (Google, etc.).
+
+**✅ CORREÇÃO IMPLEMENTADA:**
+
+**🔄 LÓGICA DE FALLBACK SINCRONIZADA**
+- ✅ **Página de perfil** agora usa a mesma lógica da página principal
+- ✅ **Fallback 1**: `profile.avatar_url` - avatar salvo no banco
+- ✅ **Fallback 2**: `user?.user_metadata?.avatar_url` - OAuth avatar
+- ✅ **Fallback 3**: `user?.user_metadata?.picture` - OAuth picture
+- ✅ **Fallback final**: Iniciais do usuário (mantido)
+
+**🎨 AVATARS ATUALIZADOS**
+- ✅ **Desktop (24x24)** - lógica de fallback completa
+- ✅ **Mobile (16x16)** - lógica de fallback completa
+- ✅ **Consistência visual** entre todas as páginas
+- ✅ **Dados OAuth preservados** - Google, Facebook, etc.
+
+**🔧 MELHORIAS TÉCNICAS**
+- ✅ **Source prioritário** - banco de dados primeiro
+- ✅ **OAuth como backup** - sempre disponível
+- ✅ **Sincronização automática** - mudanças refletem em todo lugar
+- ✅ **Experiência uniforme** em toda aplicação
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Avatar idêntico** em página principal e perfil
+- ✅ **Fallbacks robustos** para todos os cenários
+- ✅ **Dados OAuth preservados** automaticamente
+- ✅ **UX consistente** em toda aplicação
+
+### **✅ v0.2.19 - Reorganização UX da Página de Perfil (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🎯 **MELHORIA UX: BOTÃO EDITAR REPOSICIONADO**
+
+**🎯 OBJETIVO ALCANÇADO:**
+Melhorar a experiência do usuário movendo o botão "Editar Perfil" para uma posição mais intuitiva e contextual.
+
+**✅ MUDANÇAS IMPLEMENTADAS:**
+
+**📍 REPOSICIONAMENTO DO BOTÃO EDITAR**
+- ✅ **Removido do header** - não mais no canto superior direito do card
+- ✅ **Adicionado na seção "Informações Pessoais"** - logo abaixo do título
+- ✅ **Posicionamento contextual** - próximo aos campos que pode editar
+- ✅ **Separador visual** - borda inferior para delimitar a área de ação
+
+**🎨 MELHORIAS DE UX**
+- ✅ **Fluxo mais intuitivo** - botão próximo ao conteúdo editável
+- ✅ **Hierarquia visual** melhorada com separador
+- ✅ **Layout mais limpo** no header do perfil
+- ✅ **Posicionamento à direita** alinhado com padrões de interface
+
+**🔧 MELHORIAS TÉCNICAS**
+- ✅ **Código mais organizado** - botões contextualizados por seção
+- ✅ **Responsividade mantida** - funciona em mobile e desktop
+- ✅ **Estados visuais preservados** - loading, success, error
+- ✅ **Acessibilidade** mantida com labels corretos
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **UX mais intuitiva** - botão onde o usuário espera encontrar
+- ✅ **Layout mais limpo** no header do perfil
+- ✅ **Fluxo de edição** mais natural e contextual
+- ✅ **Feedback visual** aprimorado com separadores
+
+### **✅ v0.2.18 - Melhorias de Layout da Página de Perfil (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 📱 **CORREÇÃO DE LAYOUT: ALINHAMENTO RESPONSIVO OTIMIZADO**
+
+**🎯 PROBLEMA RESOLVIDO:**
+Componentes da primeira seção da página de perfil estavam com alinhamento inadequado em diferentes tamanhos de tela.
+
+**✅ MELHORIAS IMPLEMENTADAS:**
+
+**📱 LAYOUT RESPONSIVO DUPLO**
+- ✅ **Layout Desktop/Tablet** - design horizontal otimizado para telas grandes
+- ✅ **Layout Mobile** - design vertical optimizado para telas pequenas
+- ✅ **Breakpoint `sm:`** para mudança automática entre layouts
+- ✅ **Componentes adaptativos** com tamanhos diferentes por dispositivo
+
+**🎨 MELHORIAS DE ALINHAMENTO**
+- ✅ **Avatar maior** em desktop (24x24) e ajustado mobile (16x16)
+- ✅ **Espaçamento consistente** com gaps padronizados (4, 6 unidades)
+- ✅ **Botões responsivos** - tamanho `sm` desktop, full-width mobile
+- ✅ **Truncate text** para nomes e emails longos
+
+**📊 ESTATÍSTICAS REDESENHADAS**
+- ✅ **Desktop**: Layout horizontal com ícones em círculos coloridos
+- ✅ **Mobile**: Grid 3 colunas com cards individuais
+- ✅ **Informações estruturadas** - valor principal + descrição
+- ✅ **Background colorido** para melhor distinção visual
+
+**⚙️ MELHORIAS TÉCNICAS**
+- ✅ **Classes utilitárias** `flex-shrink-0`, `min-w-0`, `truncate`
+- ✅ **Dark mode support** com variantes específicas
+- ✅ **Overflow handling** para textos longos
+- ✅ **Estrutura semântica** melhorada
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Layout perfeitamente alinhado** em todas as telas
+- ✅ **Experiência mobile otimizada** com grid de estatísticas
+- ✅ **Design consistente** com sistema de cores do projeto
+- ✅ **Acessibilidade melhorada** com estrutura semântica
+
+### **✅ v0.2.17 - Página de Perfil Completa (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 👤 **MAJOR FEATURE: SISTEMA DE PERFIL DE USUÁRIO IMPLEMENTADO**
+
+**🎯 OBJETIVO ALCANÇADO:**
+Sistema completo de gerenciamento de perfil onde usuários podem visualizar e editar suas informações pessoais com integração real ao Supabase.
+
+**✅ IMPLEMENTAÇÕES REALIZADAS:**
+
+**📄 PÁGINA PROFILE COMPLETA**
+- ✅ `src/pages/Profile.tsx` - Página rica em 3 abas (Informações, Estatísticas, Configurações)
+- ✅ **Formulário completo** - todos os campos da tabela profiles
+- ✅ **Interface responsiva** mobile-first com design consistente
+- ✅ **Modo de edição** com validação e salvamento
+- ✅ **Upload de avatar** integrado ao Supabase Storage
+- ✅ **Estados de loading** e tratamento de erros
+
+**🔧 HOOK USEIMAGEUPLOAD REFATORADO**
+- ✅ `src/hooks/useImageUpload.ts` - Hook completamente reescrito
+- ✅ **Padrão mutation** seguindo TanStack Query
+- ✅ **Validação de arquivos** (tipo e tamanho)
+- ✅ **Upload para Supabase Storage** com paths únicos
+- ✅ **Feedback automático** com toasts de sucesso/erro
+
+**🛣️ NAVEGAÇÃO E ROTAS**
+- ✅ **Rota `/profile`** protegida com autenticação
+- ✅ **Redirect `/profiles`** para `/profile` (compatibilidade)
+- ✅ **Navegação existente** já funcionando no dropdown do header
+
+**🎨 FUNCIONALIDADES IMPLEMENTADAS**
+- ✅ **Informações pessoais editáveis** - nome, bio, data nascimento, gênero, etc.
+- ✅ **Dados físicos** - altura, peso, nível de condicionamento
+- ✅ **Localização** - cidade e bairro
+- ✅ **Configurações de privacidade** - perfil público, solicitações de amizade
+- ✅ **Estatísticas detalhadas** - gamificação, atividades, sequências
+- ✅ **Upload de avatar** com validação e feedback
+
+#### 🛠️ **CORREÇÕES TÉCNICAS**
+- ✅ **Hook useImageUpload** corrigido - interface opcional e padrão mutation
+- ✅ **Import Navigate** adicionado ao React Router
+- ✅ **Validação de parâmetros** completa no upload de imagens
+- ✅ **Error handling** robusto com fallbacks gracioso
+
+#### 📊 **ESTATÍSTICAS DA IMPLEMENTAÇÃO:**
+- **📂 2 arquivos principais** criados/modificados (Profile.tsx, useImageUpload.ts)
+- **🛣️ 2 rotas** adicionadas (/profile + redirect /profiles)
+- **📱 1 página completa** com sistema de abas
+- **🧩 1 hook** refatorado para padrão mutation
+- **🎨 Interface avançada** com 3 abas e formulários complexos
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Página de perfil 100% funcional** com integração real ao Supabase
+- ✅ **Sistema de upload** robusto e validado
+- ✅ **Interface rica** com edição completa de informações
+- ✅ **UX consistente** com padrões do projeto
+- ✅ **Navegação perfeita** com redirects e proteção
+
+### **✅ v0.2.16 - Marketplace SUOR Completo (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🛍️ **MAJOR FEATURE: MARKETPLACE COMPLETO IMPLEMENTADO**
+
+**🎯 OBJETIVO ALCANÇADO:**
+Sistema completo de marketplace onde usuários podem trocar pontos SUOR por recompensas reais de parceiros locais de São Paulo.
+
+**✅ IMPLEMENTAÇÕES REALIZADAS:**
+
+**🔧 BACKEND INTEGRATION**
+- ✅ `src/hooks/useRewards.ts` - Hook completo para gerenciamento de recompensas
+- ✅ **8 hooks especializados** - useRewards, useFeaturedRewards, useRedeemReward, etc.
+- ✅ **Verificação de saldo automática** antes do resgate
+- ✅ **Validação de estoque** e disponibilidade temporal
+- ✅ **Códigos de resgate únicos** gerados automaticamente
+
+**🎨 FRONTEND COMPONENTS**
+- ✅ `src/components/RewardCard.tsx` - Componente rico para exibir recompensas
+- ✅ **Modo compacto e completo** para diferentes contextos
+- ✅ **Ícones inteligentes** por categoria (fitness, food, mobility, etc.)
+- ✅ **Modal de detalhes** com informações completas
+- ✅ **Sistema de cores** dinâmico por categoria
+
+**📱 PÁGINA STORE COMPLETA**
+- ✅ `src/pages/Store.tsx` - Página principal do marketplace
+- ✅ **Sistema de abas** - Loja + Histórico pessoal
+- ✅ **Filtros por categoria** com busca em tempo real
+- ✅ **Seção destaque** para recompensas em evidência
+- ✅ **Estatísticas pessoais** de gastos e resgates
+
+**🔄 SISTEMA DE TRANSAÇÕES**
+- ✅ **Fluxo completo de resgate** com validações múltiplas
+- ✅ **Criação automática** de transações SUOR
+- ✅ **Atualização de saldo** em tempo real
+- ✅ **Histórico detalhado** de recompensas resgatadas
+- ✅ **Status tracking** (pending, confirmed, used, expired)
+
+**📊 DADOS REAIS INTEGRADOS**
+- ✅ **8 recompensas ativas** do banco Supabase
+- ✅ **4 categorias** - fitness, alimentação, mobilidade, entretenimento
+- ✅ **Parceiros reais** - Smart Fit, Bike Sampa, Cinemark, etc.
+- ✅ **Preços variados** - de 100 a 800 SUOR
+
+#### 🛠️ **CORREÇÕES TÉCNICAS INCLUÍDAS**
+- ✅ **Discrepância SUOR corrigida** - todas as páginas mostram saldo atual
+- ✅ **Função formatCurrency** adicionada ao utils.ts
+- ✅ **Rota /store** integrada ao sistema de rotas
+- ✅ **Navigation consistency** - card SUOR clicável direciona para store
+
+#### 📊 **ESTATÍSTICAS DA IMPLEMENTAÇÃO:**
+- **📂 3 novos arquivos principais** criados (useRewards.ts, RewardCard.tsx, Store.tsx)
+- **🧩 8 hooks especializados** para marketplace
+- **🎨 1 componente complexo** com múltiplos modos de exibição
+- **📱 1 página completa** com sistema de abas
+- **🔧 1 função utilitária** adicionada
+- **🛣️ 1 rota nova** integrada
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Marketplace 100% funcional** com dados reais do Supabase
+- ✅ **Sistema de resgate completo** com todas as validações
+- ✅ **Interface rica e responsiva** otimizada para mobile
+- ✅ **Integração perfeita** com sistema SUOR existente
+- ✅ **UX consistente** com padrões do projeto
 
 ### **✅ v0.2.0 - Frontend-Backend Integration (CONCLUÍDO!)**
 **Data**: Dezembro 2024
@@ -1616,4 +1868,4 @@ Este arquivo deve ser atualizado sempre que:
 
 ---
 
-*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + OAuth Google Corrigido! 🚀* 
+*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + Marketplace SUOR Funcional! 🚀* 
