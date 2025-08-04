@@ -39,6 +39,7 @@ import Achievements from "./pages/Achievements";
 import Activities from "./pages/Activities";
 import Store from "./pages/Store";
 import Profile from "./pages/Profile";
+import Social from "./pages/Social";
 
 const queryClient = new QueryClient();
 
@@ -141,6 +142,11 @@ const App = () => (
                   </ProtectedRoute>
                 } />
                 <Route path="/profiles" element={<Navigate to="/profile" replace />} />
+                <Route path="/social" element={
+                  <ProtectedRoute>
+                    <Social />
+                  </ProtectedRoute>
+                } />
             
             {/* Protected Admin Routes - Require authentication */}
             <Route path="/admin" element={

@@ -3,18 +3,19 @@
 ## 📋 **VISÃO GERAL DO PROJETO**
 
 **Nome**: Agita - São Paulo  
-**Versão**: v1.0 MVP Enterprise-Ready + Marketplace  
+**Versão**: v1.0 MVP Enterprise-Ready + Marketplace + Sistema de Perfil + Página Social  
 **Estado**: ✅ **MVP COMPLETO IMPLEMENTADO**  
 **Última atualização**: Janeiro 2025
 
 ### **📝 Descrição**
-Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, feed social em tempo real e **marketplace funcional** onde usuários podem trocar SUOR por recompensas reais de parceiros locais.
+Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, **página social dedicada** com criação de posts e interações em tempo real, **marketplace funcional** onde usuários podem trocar SUOR por recompensas reais de parceiros locais e **sistema de perfil avançado** com edição completa e upload de avatar sincronizado.
 
 ### **🎯 Objetivos Principais**
 - **Gamificação fitness** com sistema de recompensas SUOR
 - **Tracking GPS avançado** para atividades físicas  
-- **Sistema social** com feed, likes, comentários e conquistas
+- **Página social completa** com criação de posts, feed interativo e estatísticas
 - **Marketplace SUOR funcional** com 8+ recompensas de parceiros reais
+- **Sistema de perfil avançado** com edição completa e upload de avatar
 - **Analytics em tempo real** de performance e engajamento
 
 ---
@@ -143,12 +144,13 @@ agita-suor-sampa/
 │   │   ├── ActivityResults.tsx  # Resultados pós-atividade
 │   │   ├── Store.tsx           # ✅ Marketplace SUOR completo
 │   │   ├── Profile.tsx         # ✅ Página de perfil com edição completa
+│   │   ├── Social.tsx          # ✅ Página social com feed e criação de posts
 │   │   └── NotFound.tsx
 │   │
 │   ├── 📁 hooks/              # ✅ React Hooks customizados (20+)
 │   │   ├── useProfile.ts       # ✅ Gerenciamento de perfil
 │   │   ├── useActivityTypes.ts # ✅ Tipos de atividades do Supabase
-│   │   ├── useActivities.ts    # ✅ CRUD completo de atividades
+│   │   ├── useActivities.ts    # ✅ CRUD completo + hooks para atividades públicas
 │   │   ├── useSuor.ts         # ✅ Sistema SUOR e transações
 │   │   ├── useRewards.ts      # ✅ Marketplace e recompensas (8 hooks)
 │   │   ├── useAchievements.ts  # ✅ Sistema de conquistas
@@ -364,12 +366,32 @@ app_analytics         -- ✅ Métricas globais da aplicação
 - [x] ✅ Página dedicada /achievements com filtros
 - [x] ✅ Context global para notificações
 
-#### **📱 FEED SOCIAL COMPLETO**
+#### **📱 SISTEMA SOCIAL COMPLETO**
+- [x] ✅ Página social dedicada (/social) com interface completa
 - [x] ✅ useSocialFeed com posts, likes, comentários
+- [x] ✅ Sistema de criação de posts avançado com anexo de atividades
+- [x] ✅ usePublicActivities - feed de atividades da comunidade
+- [x] ✅ useUserCompletedActivities - seleção de atividades para posts
 - [x] ✅ Posts automáticos para atividades/conquistas
 - [x] ✅ Sistema de curtidas funcional em tempo real
-- [x] ✅ Interface rica com detalhes dinâmicos
+- [x] ✅ Controle de privacidade (público/amigos/privado)
+- [x] ✅ Feed de atividades na sidebar com perfis dos usuários
+- [x] ✅ Interface rica com abas organizadas (Feed/Descobrir/Meus Posts)
 - [x] ✅ Atomic operations SQL para performance
+
+#### **👤 SISTEMA DE PERFIL AVANÇADO**
+- [x] ✅ Página dedicada /profile com design responsivo
+- [x] ✅ Interface completa com 3 abas organizadas
+- [x] ✅ Edição de todos os campos do perfil (nome, bio, dados físicos, etc.)
+- [x] ✅ Sistema de upload de avatar integrado ao Supabase Storage
+- [x] ✅ Validação robusta de arquivos (tipo, tamanho)
+- [x] ✅ Avatar sincronizado entre todas as páginas
+- [x] ✅ Fallbacks inteligentes para OAuth (Google, Facebook)
+- [x] ✅ Layout responsivo duplo (desktop/mobile)
+- [x] ✅ Configurações de privacidade (perfil público/privado)
+- [x] ✅ Estatísticas detalhadas de gamificação e atividades
+- [x] ✅ UX intuitiva com botão de edição contextual
+- [x] ✅ Integração completa com dados reais do Supabase
 
 #### **⚙️ INFRASTRUCTURE & CONFIG**
 - [x] ✅ Sistema centralizado de environment variables
@@ -710,10 +732,10 @@ export const useSocialFeed = (limit = 20) => {
 
 ```typescript
 Frontend React/TypeScript:
-├── 📁 59+ arquivos TypeScript     // Componentes, hooks, pages + Profile
+├── 📁 61+ arquivos TypeScript     // Componentes, hooks, pages + Social page
 ├── 🧩 20+ React Hooks customizados // Especializados por domínio + useImageUpload
 ├── 🎨 34+ Componentes React       // Reutilizáveis e tipados + upload features
-├── 📄 14+ Páginas completas       // Rotas funcionais + Profile page
+├── 📄 15+ Páginas completas       // Rotas funcionais + Social page completa
 ├── ⚙️ 5+ Contextos globais        // Estado compartilhado
 ├── 🔍 Sistema de busca completo   // Filtros, pesquisa e histórico
 ├── 📊 Dados 100% reais           // Estatísticas baseadas no usuário
@@ -761,6 +783,7 @@ Advanced Features (100% Complete):
   Statistics Engine: ✅ Complete (Real-time calculation from user data)
   Achievements: ✅ Complete (Auto-unlock + notifications)
   Social Feed: ✅ Complete (Posts, likes, comments)
+  Social Page: ✅ Complete (Dedicated social page with post creation)
   Marketplace SUOR: ✅ Complete (Full store with real rewards)
   Real-time Updates: ✅ Complete (TanStack Query sync)
   
@@ -809,7 +832,8 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 - ✅ **Backend Supabase completo** com PostgreSQL + PostGIS
 - ✅ **Sistema de gamificação funcional** (SUOR, níveis, conquistas)
 - ✅ **Marketplace SUOR completo** com recompensas reais de parceiros
-- ✅ **Sistema de perfil completo** com edição de dados e upload de avatar
+- ✅ **Sistema de perfil avançado** com 3 abas, upload de avatar e layout responsivo
+- ✅ **Página social completa** com criação de posts e estatísticas da comunidade
 - ✅ **GPS tracking de precisão profissional**
 - ✅ **Feed social em tempo real** com interações
 - ✅ **Performance otimizada** para dispositivos móveis
@@ -1042,6 +1066,80 @@ Avatar na página de perfil estava usando apenas `profile.avatar_url`, enquanto 
 - ✅ **Fallbacks robustos** para todos os cenários
 - ✅ **Dados OAuth preservados** automaticamente
 - ✅ **UX consistente** em toda aplicação
+
+### **✅ v0.2.21 - Página Social Completa (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 👥 **MAJOR FEATURE: PÁGINA SOCIAL DEDICADA IMPLEMENTADA**
+
+**🎯 OBJETIVO ALCANÇADO:**
+Criar uma página social completa onde usuários podem interagir, criar posts, visualizar estatísticas da comunidade e explorar o feed social de forma organizada.
+
+**✅ IMPLEMENTAÇÕES REALIZADAS:**
+
+**📱 PÁGINA SOCIAL PRINCIPAL (/social)**
+- ✅ **Interface completa** - design moderno com abas organizadas
+- ✅ **Criação de posts** - sistema para publicar conteúdo personalizado
+- ✅ **Feed social integrado** - reutilização do componente SocialFeed existente
+- ✅ **Estatísticas da comunidade** - métricas visuais de engajamento
+- ✅ **Design responsivo** - otimizado para desktop e mobile
+
+**🎛️ FUNCIONALIDADES AVANÇADAS**
+- ✅ **3 abas organizadas**: Feed Geral, Descobrir, Meus Posts
+- ✅ **Controle de privacidade** - posts públicos, para amigos ou privados
+- ✅ **Modal de criação** - interface intuitiva para novos posts
+- ✅ **Estatísticas pessoais** - contadores de posts, likes e comentários
+- ✅ **Sidebar com métricas** - estatísticas da comunidade e tipos de posts
+
+**📊 DADOS E INTEGRAÇÃO**
+- ✅ **Hooks existentes reutilizados** - useUserPosts, useCreatePost, useSocialFeed
+- ✅ **Dados reais do Supabase** - nenhum dado mockado utilizado
+- ✅ **Rota protegida** - integração com sistema de autenticação
+- ✅ **Performance otimizada** - carregamento inteligente dos dados
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Página social 100% funcional** - experiência completa de rede social
+- ✅ **Interface profissional** - design consistente com o resto da aplicação
+- ✅ **Funcionalidades avançadas** - criação, visualização e interação com posts
+- ✅ **Estatísticas em tempo real** - métricas da comunidade e pessoais
+- ✅ **Sistema escalável** - preparado para funcionalidades futuras
+
+### **✅ v0.2.22 - Melhorias Avançadas da Página Social (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🚀 **MAJOR UPGRADE: FEED DE ATIVIDADES E POSTS COM ANEXOS**
+
+**🎯 OBJETIVO ALCANÇADO:**
+Transformar a página social em uma experiência mais dinâmica e envolvente, substituindo estatísticas estáticas por conteúdo real da comunidade e permitindo compartilhamento avançado de atividades.
+
+**✅ IMPLEMENTAÇÕES REALIZADAS:**
+
+**🏃‍♂️ NOVOS HOOKS PARA ATIVIDADES**
+- ✅ **usePublicActivities** - busca atividades públicas da comunidade
+- ✅ **useUserCompletedActivities** - lista atividades concluídas do usuário
+- ✅ **Filtros inteligentes** - exclui atividades do próprio usuário do feed público
+- ✅ **Auto-refresh** - atualização a cada 30 segundos do feed de atividades
+
+**📱 SIDEBAR DINÂMICA COM FEED**
+- ✅ **Feed de atividades** substituindo estatísticas numéricas
+- ✅ **Perfis dos usuários** com avatar, nome e nível
+- ✅ **Detalhes das atividades** - tipo, distância, SUOR ganho
+- ✅ **Estados de loading** com skeleton screens
+- ✅ **Card de incentivo** para criação de posts
+
+**✍️ CRIAÇÃO DE POSTS AVANÇADA**
+- ✅ **Seleção de atividades** - dropdown com atividades concluídas
+- ✅ **Posts mistos** - conteúdo de texto + atividade anexada
+- ✅ **Validação inteligente** - permite post apenas com atividade ou apenas com texto
+- ✅ **Tipo de post automático** - 'activity_completed' quando atividade é anexada
+- ✅ **Reset de estado** - limpa campos após publicação
+
+#### 🎯 **RESULTADO FINAL:**
+- ✅ **Feed mais dinâmico** - conteúdo real da comunidade em tempo real
+- ✅ **Engajamento aumentado** - usuários podem ver e se inspirar em atividades
+- ✅ **Funcionalidade avançada** - anexar atividades aos posts de forma intuitiva
+- ✅ **UX melhorada** - interface mais interativa e informativa
+- ✅ **Performance otimizada** - carregamento eficiente com estados visuais
 
 ### **✅ v0.2.19 - Reorganização UX da Página de Perfil (CONCLUÍDO!)**
 **Data**: Janeiro 2025
@@ -1868,4 +1966,4 @@ Este arquivo deve ser atualizado sempre que:
 
 ---
 
-*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + Marketplace SUOR Funcional! 🚀* 
+*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + Marketplace SUOR + Sistema de Perfil + Página Social Avançada com Feed Dinâmico! 🚀* 

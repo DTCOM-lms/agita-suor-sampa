@@ -90,6 +90,80 @@ export const useUserActivities = (limit = 20) => {
   });
 };
 
+export const useUserCompletedActivities = (limit = 10) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['user-completed-activities', user?.id, limit],
+    queryFn: async () => {
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          activity_types!inner(name, category, difficulty, base_suor_per_minute)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data as (Activity & {
+        activity_types?: {
+          name: string;
+          category: string;
+          difficulty: string;
+          base_suor_per_minute: number;
+        };
+      })[];
+    },
+    enabled: !!user?.id,
+  });
+};
+
+export const usePublicActivities = (limit = 10) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['public-activities', limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('activities')
+        .select(`
+          *,
+          activity_types!inner(name, category, difficulty, base_suor_per_minute),
+          profiles!inner(id, full_name, username, avatar_url, level)
+        `)
+        .eq('is_public', true)
+        .eq('status', 'completed')
+        .neq('user_id', user?.id || '') // Excluir atividades do próprio usuário
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data as (Activity & {
+        activity_types?: {
+          name: string;
+          category: string;
+          difficulty: string;
+          base_suor_per_minute: number;
+        };
+        profiles?: {
+          id: string;
+          full_name: string;
+          username?: string;
+          avatar_url?: string;
+          level: number;
+        };
+      })[];
+    },
+    enabled: !!user?.id,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+};
+
 export const useCreateActivity = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
