@@ -40,6 +40,7 @@ Um aplicativo **gamificado completo** para promover atividades físicas e bem-es
 |-----------|--------|-----------|
 | **[🔐 Environment Setup](./ENVIRONMENT_SETUP.md)** | ✅ Completo | Configuração de variáveis de ambiente |
 | **[🎉 Integração Summary](./FRONTEND_BACKEND_INTEGRATION_SUMMARY.md)** | ✅ Completo | Resumo das implementações realizadas |
+| **[🎯 SUOR Onboarding](./SUOR_ONBOARDING_IMPLEMENTATION.md)** | ✅ Completo | Sistema de onboarding para novos usuários |
 
 ## 🚀 Quick Start
 
@@ -104,6 +105,7 @@ bun dev
 - 👤 **Gerenciamento de Perfil Avançado** - edição completa com upload de avatar
 - 🏆 **Sistema de Conquistas** com progress tracking automático
 - 📱 **Feed Social Completo** - página dedicada com criação de posts, interações e estatísticas
+- 🎯 **Sistema de Onboarding SUOR** - modal interativo para novos usuários
 
 ### ✅ **MARKETPLACE SUOR - 100% Completo e Funcional**
 - 🛍️ **Loja Completa** - página dedicada com interface rica
@@ -169,6 +171,17 @@ bun dev
 - 📱 **Mobile-First Design** totalmente responsivo
 - 🖼️ **Upload de Imagens** com validação e Supabase Storage
 - 📊 **61+ Arquivos TypeScript** com arquitetura bem estruturada
+
+### ✅ **SISTEMA DE ONBOARDING SUOR - 100% Completo e Funcional**
+- 🎯 **Modal Interativo** - 4 etapas progressivas explicando o SUOR
+- 🔍 **Detecção Automática** - aparece apenas para novos usuários
+- 💾 **Controle de Estado** - localStorage para não repetir
+- 🎨 **Design Otimizado** - glassmorphism e responsivo
+- 🔄 **Navegação Intuitiva** - anterior/próximo com progress bar
+- ⏭️ **Opção de Pular** - botão X ou "Pular tutorial"
+- 👤 **Acesso Manual** - botão "Ver Tutorial" no perfil
+- 📊 **Conteúdo Educativo** - como ganhar e gastar SUOR
+- 🎮 **UX Gamificada** - badges, ícones e cores temáticas
 
 ### 🚀 **PRÓXIMAS FEATURES**
 - 📍 **Sistema de Check-in** com QR Codes e geofencing

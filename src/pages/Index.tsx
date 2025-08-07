@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import MainMap from "@/components/MainMap";
+import SuorOnboardingModal from "@/components/SuorOnboardingModal";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ import { useSocialFeed } from '@/hooks/useSocialFeed';
 import { useActivityTypes } from '@/hooks/useActivityTypes';
 import { useUserStats } from '@/hooks/useUserStats';
 import { useProfile } from '@/hooks/useProfile';
+import { useSuorOnboarding } from '@/hooks/useSuorOnboarding';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -46,6 +48,7 @@ const Index = () => {
   const { data: activityTypes } = useActivityTypes();
   const { data: userStats, isLoading: userStatsLoading, error: userStatsError } = useUserStats();
   const { data: profileData, isLoading: profileLoading } = useProfile();
+  const { showOnboarding, closeOnboarding } = useSuorOnboarding();
   
   // Estado para controlar foco no mapa
   const [focusOnChallenges, setFocusOnChallenges] = useState(false);
@@ -311,8 +314,8 @@ const Index = () => {
                       <div className="flex-1">
                         <p className="font-medium text-sm">{post.profiles?.full_name}</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          {post.post_type === 'activity_completed' && 'completou uma atividade'}
-                          {post.post_type === 'achievement_unlocked' && 'desbloqueou uma conquista'}
+                          {post.type === 'activity' && 'completou uma atividade'}
+                          {post.type === 'achievement' && 'desbloqueou uma conquista'}
                         </p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
@@ -333,6 +336,12 @@ const Index = () => {
       </main>
 
       <MobileBottomNav />
+
+      {/* SUOR Onboarding Modal */}
+      <SuorOnboardingModal 
+        isOpen={showOnboarding} 
+        onClose={closeOnboarding} 
+      />
     </div>
   );
 };

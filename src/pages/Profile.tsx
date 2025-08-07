@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSuorOnboarding } from '@/hooks/useSuorOnboarding';
 import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import SuorOnboardingModal from '@/components/SuorOnboardingModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,6 +45,8 @@ const Profile = () => {
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
   const uploadImage = useImageUpload();
+  const { resetOnboarding } = useSuorOnboarding();
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -732,11 +736,45 @@ const Profile = () => {
                 )}
               </CardContent>
             </Card>
+
+            <Card className="card-agita">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Ajuda e Tutorial
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Tutorial do SUOR</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Revisar como funciona o sistema de recompensas
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowOnboarding(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Trophy className="h-4 w-4" />
+                    Ver Tutorial
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
 
       <MobileBottomNav />
+
+      {/* SUOR Onboarding Modal */}
+      <SuorOnboardingModal 
+        isOpen={showOnboarding} 
+        onClose={() => setShowOnboarding(false)} 
+      />
     </div>
   );
 };
