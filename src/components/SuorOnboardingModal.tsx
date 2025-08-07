@@ -31,8 +31,8 @@ const SuorOnboardingModal = ({ isOpen, onClose }: SuorOnboardingModalProps) => {
 
   const steps = [
     {
-      title: "Bem-vindo ao SUOR! 💰",
-      subtitle: "Sua moeda de recompensa",
+      title: "Bem-vindo ao Agita! 👋",
+      subtitle: "Conheça o SUOR, sua moeda de recompensa",
       icon: <Coins className="h-12 w-12 text-yellow-500" />,
       content: (
         <div className="space-y-4">
@@ -86,13 +86,13 @@ const SuorOnboardingModal = ({ isOpen, onClose }: SuorOnboardingModalProps) => {
       )
     },
     {
-      title: "Gastar SUOR 🛍️",
+      title: "Como gastar SUOR 🛍️",
       subtitle: "Recompensas reais esperando por você",
       icon: <Gift className="h-12 w-12 text-pink-500" />,
       content: (
         <div className="space-y-4">
           <p className="text-muted-foreground text-center">
-            Use seus SUORs para resgatar recompensas incríveis de nossos parceiros!
+            Use seus SUOR para resgatar recompensas incríveis de nossos parceiros pelo app Agita.
           </p>
           <div className="grid gap-3">
             <div className="flex items-center space-x-3 p-3 bg-pink-50 dark:bg-pink-950/20 rounded-lg">
@@ -127,12 +127,12 @@ const SuorOnboardingModal = ({ isOpen, onClose }: SuorOnboardingModalProps) => {
     },
     {
       title: "Pronto para Começar! 🚀",
-      subtitle: "Sua jornada fitness começa agora",
+      subtitle: "Sua jornada no Agita começa agora",
       icon: <Play className="h-12 w-12 text-green-500" />,
       content: (
         <div className="space-y-4">
           <p className="text-muted-foreground text-center">
-            Agora você sabe tudo sobre o SUOR! Comece sua primeira atividade e veja seus pontos crescerem.
+            Agora você sabe como funciona o <strong>SUOR</strong> no Agita! Comece sua primeira atividade e veja seus pontos crescerem.
           </p>
           <div className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 p-4 rounded-lg">
             <div className="flex items-center space-x-3">
