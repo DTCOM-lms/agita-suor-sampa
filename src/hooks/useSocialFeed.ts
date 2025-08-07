@@ -7,7 +7,7 @@ interface SocialPost {
   user_id: string;
   activity_id?: string;
   content?: string;
-  post_type: 'activity_completed' | 'achievement_unlocked' | 'general_post' | 'check_in' | 'challenge_completed';
+  type: 'activity' | 'achievement' | 'challenge' | 'photo' | 'text';
   media_urls?: string[];
   location?: any; // geometry
   visibility: 'public' | 'friends' | 'private';
@@ -143,7 +143,7 @@ export const useCreatePost = () => {
     mutationFn: async (postData: {
       activity_id?: string;
       content?: string;
-      post_type: SocialPost['post_type'];
+             post_type: SocialPost['type'];
       media_urls?: string[];
       visibility?: 'public' | 'friends' | 'private';
       location?: { lat: number; lng: number };
@@ -152,49 +152,31 @@ export const useCreatePost = () => {
 
       let data, error;
       
-      if (postData.location) {
-        // Usar RPC para inserir com geometria
-        const result = await supabase
-          .rpc('create_social_post_with_location', {
-            p_user_id: user.id,
-            p_post_type: postData.post_type,
-            p_longitude: postData.location.lng,
-            p_latitude: postData.location.lat,
-            p_activity_id: postData.activity_id,
-            p_content: postData.content,
-            p_media_urls: postData.media_urls,
-            p_visibility: postData.visibility || 'public'
-          });
-        
-        data = result.data?.[0];
-        error = result.error;
-      } else {
-        // Inserção sem localização
-        const result = await supabase
-          .from('social_posts')
-          .insert({
-            user_id: user.id,
-            activity_id: postData.activity_id,
-            content: postData.content,
-            post_type: postData.post_type,
-            media_urls: postData.media_urls,
-            visibility: postData.visibility || 'public',
-            likes_count: 0,
+      // Inserção simplificada sem localização por enquanto
+      const result = await supabase
+        .from('social_posts')
+        .insert({
+          user_id: user.id,
+          activity_id: postData.activity_id,
+          content: postData.content,
+                     type: postData.post_type,
+          media_urls: postData.media_urls,
+          visibility: postData.visibility || 'public',
+                      likes_count: 0,
             comments_count: 0,
             shares_count: 0,
             is_pinned: false
-          })
-          .select(`
-            *,
-            profiles!social_posts_user_id_fkey(
-              id, full_name, username, avatar_url, level
-            )
-          `)
-          .single();
-          
-        data = result.data;
-        error = result.error;
-      }
+        })
+        .select(`
+          *,
+          profiles!social_posts_user_id_fkey(
+            id, full_name, username, avatar_url, level
+          )
+        `)
+        .single();
+        
+      data = result.data;
+      error = result.error;
 
       if (error) throw error;
       return data;
@@ -374,7 +356,7 @@ export const useCreateActivityPost = () => {
       await createPost.mutateAsync({
         activity_id: activityId,
         content: content || undefined,
-        post_type: 'activity_completed',
+        post_type: 'activity',
         visibility: 'public'
       });
     } catch (error) {
@@ -393,7 +375,7 @@ export const useCreateAchievementPost = () => {
     try {
       await createPost.mutateAsync({
         content: content || undefined,
-        post_type: 'achievement_unlocked',
+        post_type: 'achievement',
         visibility: 'public'
       });
     } catch (error) {

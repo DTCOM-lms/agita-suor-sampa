@@ -145,6 +145,8 @@ bun dev
 - 📈 **Feed Dinâmico** - visualização em tempo real de atividades dos usuários
 - 🔄 **Sincronização Real** - atualizações automáticas do feed
 - 🎨 **Interface Rica** - design moderno com abas organizadas
+- 🔧 **Enum Post Type Corrigido** - valores alinhados com banco de dados
+- 🔒 **RLS Configurado** - políticas de segurança para social_posts
 
 ### ✅ **GPS & TRACKING INTELIGENTE - 100% Completo**
 - 🗺️ **GPS Tracking Adaptativo** - GPS para outdoor, timer para indoor
@@ -175,6 +177,7 @@ bun dev
 - 🔔 **Push Notifications** - lembretes e promoções
 - ⌚ **Integração com Wearables** - Apple Watch, Garmin, Fitbit
 - 📊 **Analytics Dashboard** - métricas detalhadas para usuários
+- 🤝 **Sistema de Amizades** - para posts "friends only" e conexões sociais
 - 🤝 **Sistema Social Avançado** - grupos, mentoria e ranking
 - 🎮 **Gamificação Expandida** - ligas, temporadas e eventos especiais
 

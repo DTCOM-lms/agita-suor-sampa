@@ -70,7 +70,7 @@ const Social = () => {
 
     try {
       const hasActivity = selectedActivity !== 'none';
-      const postType = hasActivity ? 'activity_completed' : 'general_post';
+      const postType = hasActivity ? 'activity' : 'text';
       
       await createPost.mutateAsync({
         content: newPostContent || undefined,

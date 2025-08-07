@@ -3,12 +3,12 @@
 ## 📋 **VISÃO GERAL DO PROJETO**
 
 **Nome**: Agita - São Paulo  
-**Versão**: v1.0 MVP Enterprise-Ready + Marketplace + Sistema de Perfil + Página Social  
+**Versão**: v1.0 MVP Enterprise-Ready + Marketplace + Sistema de Perfil + Página Social + Correções RLS  
 **Estado**: ✅ **MVP COMPLETO IMPLEMENTADO**  
 **Última atualização**: Janeiro 2025
 
 ### **📝 Descrição**
-Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, **página social dedicada** com criação de posts e interações em tempo real, **marketplace funcional** onde usuários podem trocar SUOR por recompensas reais de parceiros locais e **sistema de perfil avançado** com edição completa e upload de avatar sincronizado.
+Aplicativo gamificado completo para promover saúde, bem-estar e engajamento coletivo através de atividades físicas, convertendo comportamentos saudáveis em benefícios reais por meio da moeda virtual **SUOR**. Sistema enterprise-ready com funcionalidades avançadas de GPS tracking, conquistas automáticas, **página social dedicada** com criação de posts e interações em tempo real, **marketplace funcional** onde usuários podem trocar SUOR por recompensas reais de parceiros locais e **sistema de perfil avançado** com edição completa e upload de avatar sincronizado. **Sistema social completamente funcional** com enum corrigido e políticas RLS configuradas.
 
 ### **🎯 Objetivos Principais**
 - **Gamificação fitness** com sistema de recompensas SUOR
@@ -378,6 +378,9 @@ app_analytics         -- ✅ Métricas globais da aplicação
 - [x] ✅ Feed de atividades na sidebar com perfis dos usuários
 - [x] ✅ Interface rica com abas organizadas (Feed/Descobrir/Meus Posts)
 - [x] ✅ Atomic operations SQL para performance
+- [x] ✅ Enum post_type corrigido (activity, achievement, challenge, photo, text)
+- [x] ✅ Políticas RLS configuradas para social_posts
+- [x] ✅ Criação de posts 100% funcional sem erros 400/403
 
 #### **👤 SISTEMA DE PERFIL AVANÇADO**
 - [x] ✅ Página dedicada /profile com design responsivo
@@ -740,7 +743,8 @@ Frontend React/TypeScript:
 ├── 🔍 Sistema de busca completo   // Filtros, pesquisa e histórico
 ├── 📊 Dados 100% reais           // Estatísticas baseadas no usuário
 ├── 📱 Interface adaptativa        // GPS vs Manual UI
-└── 💯 100% TypeScript coverage    // Tipagem completa
+├── 💯 100% TypeScript coverage    // Tipagem completa
+└── 🔧 Sistema social corrigido    // Enum + RLS configurados
 
 Backend PostgreSQL + Supabase:
 ├── 🗄️ 20+ Tabelas relacionais    // Schema completo
@@ -751,7 +755,8 @@ Backend PostgreSQL + Supabase:
 ├── 🏃‍♂️ 35+ Tipos de atividades    // Catálogo completo
 ├── 📍 PostGIS Support           // Dados geoespaciais nativos
 ├── 🎯 Funções RPC universais    // Compatibilidade point/geometry
-└── 🔧 Sistema debug avançado    // Logs e verificação automática
+├── 🔧 Sistema debug avançado    // Logs e verificação automática
+└── 📱 Social posts RLS configurado // Políticas para social_posts
 
 Configuration & Documentation:
 ├── 📋 10+ Arquivos documentação  // Guias essenciais consolidados
@@ -1031,6 +1036,47 @@ O **Agita** é agora uma **aplicação completa e robusta** de gamificação fit
 ---
 
 ## 📝 **CHANGELOG - IMPLEMENTAÇÕES RECENTES**
+
+### **✅ v0.2.23 - Correções Críticas do Sistema Social (CONCLUÍDO!)**
+**Data**: Janeiro 2025
+
+#### 🔧 **CORREÇÕES CRÍTICAS: ENUM POST_TYPE E RLS**
+
+**🎯 PROBLEMAS RESOLVIDOS:**
+1. **Erro 400 Bad Request** - `"invalid input value for enum post_type: "activity_completed""`
+2. **Erro 403 Forbidden** - `"new row violates row-level security policy for table "social_posts""`
+
+**✅ CORREÇÕES IMPLEMENTADAS:**
+
+**🔄 ENUM POST_TYPE CORRIGIDO**
+- ✅ **Valores do banco**: `activity`, `achievement`, `challenge`, `photo`, `text`
+- ✅ **Valores do código**: Atualizados para corresponder ao banco
+- ✅ **Mapeamento correto**:
+  - `activity_completed` → `activity`
+  - `achievement_unlocked` → `achievement`
+  - `general_post` → `text`
+  - `check_in` → `photo`
+  - `challenge_completed` → `challenge`
+
+**🔒 POLÍTICAS RLS CONFIGURADAS**
+- ✅ **RLS habilitado** na tabela `social_posts`
+- ✅ **Política de inserção** - usuários autenticados podem criar posts
+- ✅ **Política de leitura pública** - posts públicos visíveis para todos
+- ✅ **Política de leitura própria** - usuários veem seus próprios posts
+- ✅ **Scripts SQL** criados para configuração automática
+
+**📝 ARQUIVOS CORRIGIDOS**
+- ✅ **`src/hooks/useSocialFeed.ts`** - interface e hooks atualizados
+- ✅ **`src/components/SocialFeed.tsx`** - componente de exibição corrigido
+- ✅ **`src/pages/Social.tsx`** - lógica de criação de posts ajustada
+- ✅ **`FIX_SOCIAL_POSTS_RLS_SIMPLE.sql`** - script para configuração RLS
+
+**🎯 RESULTADO FINAL:**
+- ✅ **Criação de posts 100% funcional** - sem erros 400/403
+- ✅ **Enum sincronizado** - valores alinhados com o banco
+- ✅ **Segurança mantida** - RLS configurado corretamente
+- ✅ **Interface funcionando** - todos os componentes atualizados
+- ✅ **Build funcionando** - aplicação compila sem erros
 
 ### **✅ v0.2.20 - Sincronização de Avatar Corrigida (CONCLUÍDO!)**
 **Data**: Janeiro 2025
@@ -1966,4 +2012,4 @@ Este arquivo deve ser atualizado sempre que:
 
 ---
 
-*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + Marketplace SUOR + Sistema de Perfil + Página Social Avançada com Feed Dinâmico! 🚀* 
+*📈 Documentação completa atualizada: Janeiro 2025 - Projeto MVP Enterprise-Ready + Marketplace SUOR + Sistema de Perfil + Página Social Avançada com Feed Dinâmico + Correções RLS! 🚀* 

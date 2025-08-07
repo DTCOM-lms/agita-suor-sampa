@@ -13,7 +13,7 @@ interface SocialPost {
   user_id: string;
   activity_id?: string;
   content?: string;
-  post_type: 'activity_completed' | 'achievement_unlocked' | 'general_post' | 'check_in' | 'challenge_completed';
+  type: 'activity' | 'achievement' | 'challenge' | 'photo' | 'text';
   likes_count: number;
   comments_count: number;
   shares_count: number;
@@ -67,25 +67,28 @@ const FeedItem = ({ post }: FeedItemProps) => {
   };
 
   const getPostContent = () => {
-    switch (post.post_type) {
-      case 'activity_completed':
+    switch (post.type) {
+      case 'activity':
         if (post.activities) {
           return `Completou: ${post.activities.title}`;
         }
         return 'Completou uma atividade';
       
-      case 'achievement_unlocked':
+      case 'achievement':
         const achievement = post.achievements;
         if (achievement) {
           return `Desbloqueou a conquista: ${achievement.name}`;
         }
         return 'Desbloqueou uma nova conquista';
       
-      case 'check_in':
-        return 'Fez check-in em um local';
-      
-      case 'challenge_completed':
+      case 'challenge':
         return 'Completou um desafio';
+      
+      case 'photo':
+        return 'Compartilhou uma foto';
+      
+      case 'text':
+        return 'Compartilhou uma mensagem';
       
       default:
         return post.content || 'Compartilhou uma atividade';
@@ -93,15 +96,17 @@ const FeedItem = ({ post }: FeedItemProps) => {
   };
 
   const getPostIcon = () => {
-    switch (post.post_type) {
-      case 'activity_completed':
+    switch (post.type) {
+      case 'activity':
         return getActivityIcon(post.activities?.activity_types?.category);
-      case 'achievement_unlocked':
+      case 'achievement':
         return '🏆';
-      case 'check_in':
-        return '📍';
-      case 'challenge_completed':
+      case 'challenge':
         return '🎯';
+      case 'photo':
+        return '📸';
+      case 'text':
+        return '💬';
       default:
         return '💪';
     }
@@ -146,7 +151,7 @@ const FeedItem = ({ post }: FeedItemProps) => {
               <Badge variant="outline" className="text-xs">
                 Nível {post.profiles?.level || 1}
               </Badge>
-              {post.post_type === 'achievement_unlocked' && (
+              {post.type === 'achievement' && (
                 <div className="flex items-center gap-1 px-2 py-1 bg-warning/10 rounded-full">
                   <Trophy className="h-3 w-3 text-warning" />
                   <span className="text-xs text-warning font-medium">Nova conquista!</span>
@@ -196,7 +201,7 @@ const FeedItem = ({ post }: FeedItemProps) => {
         )}
 
         {/* Achievement Details */}
-        {post.post_type === 'achievement_unlocked' && post.achievements && (
+        {post.type === 'achievement' && post.achievements && (
           <div className="mb-4 p-3 bg-warning/5 rounded-lg border border-warning/20">
             <div className="flex items-center gap-2 mb-1">
               <Trophy className="h-4 w-4 text-warning" />
