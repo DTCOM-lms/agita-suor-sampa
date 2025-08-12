@@ -26,6 +26,7 @@ interface Profile {
   streak_days: number;
   longest_streak: number;
   last_activity_date?: string;
+  is_admin?: boolean;
   is_public: boolean;
   allow_friend_requests: boolean;
   notification_preferences: Record<string, any>;

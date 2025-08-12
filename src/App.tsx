@@ -18,6 +18,7 @@ import AuthCallback from "./pages/AuthCallback";
 
 // Admin
 import { AdminLayout } from "./layouts/AdminLayout";
+import AdminRoute from "@/components/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import Races from "./pages/admin/Races";
@@ -25,6 +26,7 @@ import Events from "./pages/admin/Events";
 import Suor from "./pages/admin/Suor";
 import Challenges from "./pages/admin/Challenges";
 import Partners from "./pages/admin/Partners";
+import ActivitiesAdmin from "./pages/admin/Activities";
 
 // Auth & Onboarding
 import Welcome from "./pages/Welcome";
@@ -38,6 +40,7 @@ import Integrations from "./pages/onboarding/Integrations";
 import Achievements from "./pages/Achievements";
 import Activities from "./pages/Activities";
 import Store from "./pages/Store";
+import Rewards from "./pages/admin/Rewards";
 import Profile from "./pages/Profile";
 import Social from "./pages/Social";
 
@@ -151,52 +154,79 @@ const App = () => (
             {/* Protected Admin Routes - Require authentication */}
             <Route path="/admin" element={
               <ProtectedRoute>
-                <AdminLayout><AdminDashboard /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><AdminDashboard /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/users" element={
               <ProtectedRoute>
-                <AdminLayout><Users /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Users /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/races" element={
               <ProtectedRoute>
-                <AdminLayout><Races /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Races /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/routes" element={
               <ProtectedRoute>
-                <AdminLayout><div>Percursos - Em desenvolvimento</div></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><div>Percursos - Em desenvolvimento</div></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/events" element={
               <ProtectedRoute>
-                <AdminLayout><Events /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Events /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/activities" element={
               <ProtectedRoute>
-                <AdminLayout><div>Atividades - Em desenvolvimento</div></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><ActivitiesAdmin /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/suor" element={
               <ProtectedRoute>
-                <AdminLayout><Suor /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Suor /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/challenges" element={
               <ProtectedRoute>
-                <AdminLayout><Challenges /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Challenges /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/partners" element={
               <ProtectedRoute>
-                <AdminLayout><Partners /></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><Partners /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             <Route path="/admin/settings" element={
               <ProtectedRoute>
-                <AdminLayout><div>Configurações - Em desenvolvimento</div></AdminLayout>
+                <AdminRoute>
+                  <AdminLayout><div>Configurações - Em desenvolvimento</div></AdminLayout>
+                </AdminRoute>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/rewards" element={
+              <ProtectedRoute>
+                <AdminRoute>
+                  <AdminLayout><Rewards /></AdminLayout>
+                </AdminRoute>
               </ProtectedRoute>
             } />
             
