@@ -72,8 +72,8 @@ interface EnvironmentConfig {
 export const env: EnvironmentConfig = {
   // 🚀 Supabase Configuration
   supabase: {
-    url: import.meta.env.VITE_SUPABASE_URL || "https://jjlgmxbgxbcksvviuhmo.supabase.co",
-    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqbGdteGJneGJja3N2dml1aG1vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNzEyODIsImV4cCI6MjA2ODk0NzI4Mn0.bQ5p_0IfeL7aGLkUHsSTiwr_PALHXkMjHpU5CJ2fvRY"
+    url: import.meta.env.VITE_SUPABASE_URL || "",
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || ""
   },
   
   // 🗺️ Mapbox Configuration

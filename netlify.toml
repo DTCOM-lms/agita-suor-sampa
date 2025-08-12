@@ -2,6 +2,17 @@
   command = "npm run build"
   publish = "dist"
 
+# Netlify build-time environment
+[build.environment]
+  # Lock Node if necessário
+  NODE_VERSION = "20"
+  # Os VITE_* são públicos e aparecem no bundle; omita-os do secrets scanning
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_MAPBOX_ACCESS_TOKEN,VITE_APP_NAME,VITE_APP_VERSION,VITE_APP_ENVIRONMENT,VITE_APP_BASE_URL,VITE_SUOR_INITIAL_BALANCE,VITE_SUOR_MAX_DAILY_EARNED,VITE_SUOR_STREAK_BONUS,VITE_PWA_NAME,VITE_PWA_SHORT_NAME,VITE_PWA_DESCRIPTION,VITE_ENABLE_RATE_LIMITING,VITE_MAX_UPLOAD_SIZE_MB,VITE_SESSION_TIMEOUT_MINUTES,VITE_ENABLE_DEBUG_MODE,VITE_SHOW_DEV_TOOLS,VITE_ENABLE_MOCK_DATA,VITE_GA_TRACKING_ID,VITE_SENTRY_DSN,VITE_OPENWEATHER_API_KEY,VITE_GOOGLE_PLACES_API_KEY,VITE_STRAVA_CLIENT_ID,VITE_STRAVA_CLIENT_SECRET"
+  # Opcional: ignore artefatos e docs no scan
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,public/**,*.md,*.sql"
+  # Alternativa rápida (desabilita completamente):
+  # SECRETS_SCAN_ENABLED = "false"
+
 # SPA fallback for client-side routing (React Router / Vite)
 [[redirects]]
   from = "/*"
