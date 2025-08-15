@@ -20,7 +20,8 @@ import {
   Search,
   Flame,
   Calendar,
-  Users
+  Users,
+  Shield
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useSocialFeed } from '@/hooks/useSocialFeed';
@@ -149,6 +150,16 @@ const Index = () => {
                     <Trophy className="mr-2 h-4 w-4" />
                     <span>Conquistas</span>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {profile?.is_admin && (
+                    <DropdownMenuItem 
+                      className="cursor-pointer"
+                      onClick={() => navigate('/admin')}
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Painel Admin</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className="cursor-pointer text-destructive focus:text-destructive"
