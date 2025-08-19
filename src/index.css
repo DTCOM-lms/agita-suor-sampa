@@ -66,7 +66,7 @@ All colors MUST be HSL.
 
     --sidebar-background: 0 0% 98%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 215 25% 25%;
 
     --sidebar-primary: 240 5.9% 10%;
 
@@ -74,7 +74,7 @@ All colors MUST be HSL.
 
     --sidebar-accent: 240 4.8% 95.9%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent-foreground: 215 25% 25%;
 
     --sidebar-border: 220 13% 91%;
 
@@ -426,5 +426,37 @@ All colors MUST be HSL.
   }
   90% {
     transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* Sidebar text visibility fixes */
+@layer components {
+  [data-sidebar="group-label"] {
+    color: hsl(var(--sidebar-foreground)) !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+  }
+  
+  [data-sidebar="menu-button"] {
+    color: hsl(var(--sidebar-foreground)) !important;
+  }
+  
+  [data-sidebar="menu-button"]:hover {
+    color: hsl(var(--sidebar-accent-foreground)) !important;
+  }
+  
+  /* Force dark text for sidebar labels */
+  .sidebar-label-text {
+    color: hsl(215 25% 25%) !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Override default sidebar label styles */
+  [data-sidebar="group-label"].sidebar-label-text {
+    color: hsl(215 25% 25%) !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
 }

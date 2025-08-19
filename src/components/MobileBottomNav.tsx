@@ -1,4 +1,4 @@
-import { Home, Activity, Trophy, Users, Plus, Play, Store } from "lucide-react";
+import { Home, Activity, Trophy, Users, Plus, Play, Store, Calendar } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,20 +17,20 @@ const MobileBottomNav = () => {
       badge: null
     },
     {
-      icon: Trophy,
-      label: "Conquistas",
-      path: "/achievements",
-      isActive: location.pathname === "/achievements",
+      icon: Calendar,
+      label: "Eventos",
+      path: "/events",
+      isActive: location.pathname === "/events",
       badge: null
     },
     // Espaço para o FAB central
     null,
     {
-      icon: Users,
-      label: "Social",
-      path: "/social",
-      isActive: location.pathname === "/social",
-      badge: 3 // Exemplo: 3 novas interações
+      icon: Trophy,
+      label: "Conquistas",
+      path: "/achievements",
+      isActive: location.pathname === "/achievements",
+      badge: null
     },
     {
       icon: Store,

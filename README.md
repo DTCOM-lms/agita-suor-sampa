@@ -13,6 +13,7 @@ Um aplicativo **gamificado completo** para promover atividades físicas e bem-es
 - **📱 Feed Social** com likes, comentários e posts automáticos
 - **🗺️ GPS Tracking Avançado** com precisão profissional
 - **🎯 Dashboard Rico** com métricas e estatísticas completas
+- **🎪 Sistema de Eventos** com criação, participação e check-in
 
 ## 📚 Documentação
 
@@ -29,11 +30,14 @@ Um aplicativo **gamificado completo** para promover atividades físicas e bem-es
 | **[🚀 Supabase Completo](./SUPABASE_IMPLEMENTATION.md)** | ✅ Centralizado | **Guia único: Tables + Seeds + Functions** |
 | **[📋 Scripts SQL Essenciais](./SQL_SCRIPTS_REFERENCE.md)** | ✅ **Organizado** | **Lista de scripts mantidos e suas funções** |
 | **[📋 Tabelas Only](./CREATE_TABLES_SUPABASE.md)** | ✅ Referência | Scripts isolados apenas para criação de tabelas |
+| **[🔒 Correções RLS Admin](./FIX_ADMIN_RLS_RECURSION.sql)** | ✅ **Implementado** | **Script para corrigir recursão infinita nas políticas RLS** |
 
 ### **🐛 Correções & Manutenção**
 | Documento | Status | Descrição |
 |-----------|--------|-----------|
 | **[🔧 Correções v0.2.5](./BUG_FIXES_CONSOLIDATED_v0.2.5.md)** | ✅ **Consolidado** | **Todos os bug fixes aplicados e resolvidos** |
+| **[🔧 Correções RLS Admin](./FIX_ADMIN_RLS_RECURSION.sql)** | ✅ **Implementado** | **Correção de recursão infinita nas políticas RLS** |
+| **[🚨 Script de Emergência](./EMERGENCY_RLS_FIX.sql)** | ✅ **Disponível** | **Script para desabilitar RLS em caso de problemas** |
 
 ### **🔧 Configuração & Setup**
 | Documento | Status | Descrição |
@@ -64,7 +68,9 @@ npm run setup:env
 
 # 🗄️ Configure o Supabase
 # 1. Execute SUPABASE_IMPLEMENTATION.md no SQL Editor
-# 2. Obtenha URL e Anon Key do seu projeto
+# 2. Execute EVENTS_WITHOUT_ADMIN_CHECK.sql para sistema de eventos
+# 3. Execute EVENTS_RPC_FUNCTIONS.sql para funções de eventos
+# 4. Obtenha URL e Anon Key do seu projeto
 
 # 🗺️ Configure Mapbox (opcional)
 # 1. Crie conta em mapbox.com
@@ -106,6 +112,8 @@ bun dev
 - 🏆 **Sistema de Conquistas** com progress tracking automático
 - 📱 **Feed Social Completo** - página dedicada com criação de posts, interações e estatísticas
 - 🎯 **Sistema de Onboarding SUOR** - modal interativo para novos usuários
+- 👑 **Sistema Administrativo** - gerenciamento de usuários e políticas de segurança
+- 🎪 **Sistema de Eventos Completo** - criação, participação e check-in com localização geoespacial
 
 ### ✅ **MARKETPLACE SUOR - 100% Completo e Funcional**
 - 🛍️ **Loja Completa** - página dedicada com interface rica
@@ -150,6 +158,14 @@ bun dev
 - 🔧 **Enum Post Type Corrigido** - valores alinhados com banco de dados
 - 🔒 **RLS Configurado** - políticas de segurança para social_posts
 
+### ✅ **SISTEMA ADMINISTRATIVO - 100% Completo e Funcional**
+- 👑 **Gerenciamento de Usuários** - visualizar e alterar status admin
+- 🔒 **Políticas RLS Corrigidas** - sem recursão infinita
+- ⚡ **Função RPC Otimizada** - verificação admin sem loops
+- 🛡️ **Segurança Enterprise** - políticas de acesso granulares
+- 📊 **Interface Admin Completa** - dashboard para administradores
+- 🔄 **Toggle Admin Funcional** - alterar status de usuários em tempo real
+
 ### ✅ **GPS & TRACKING INTELIGENTE - 100% Completo**
 - 🗺️ **GPS Tracking Adaptativo** - GPS para outdoor, timer para indoor
 - 📍 **Localização Sempre Disponível** no mapa (GPS + fallback)
@@ -171,6 +187,18 @@ bun dev
 - 📱 **Mobile-First Design** totalmente responsivo
 - 🖼️ **Upload de Imagens** com validação e Supabase Storage
 - 📊 **61+ Arquivos TypeScript** com arquitetura bem estruturada
+- 🔒 **Sistema de Segurança** com RLS e RPC functions otimizadas
+
+### **✅ SISTEMA DE EVENTOS COMPLETO - 100% FUNCIONAL**
+- 🎯 **Criação de eventos** coletivos com localização geoespacial
+- 📍 **PostGIS integration** com coordenadas precisas de São Paulo
+- 👥 **Gestão de participantes** com status de inscrição e confirmação
+- 🏆 **Recompensas SUOR** por participação e check-in
+- 🔍 **Busca avançada** com filtros por tipo, categoria e localização
+- 📊 **Estatísticas em tempo real** de eventos e participantes
+- 🗺️ **Eventos próximos** com cálculo automático de distância
+- 🔒 **Segurança RLS** configurada para controle de acesso
+- ⚡ **5 funções RPC** otimizadas para performance
 
 ### ✅ **SISTEMA DE ONBOARDING SUOR - 100% Completo e Funcional**
 - 🎯 **Modal Interativo** - 4 etapas progressivas explicando o SUOR
@@ -184,7 +212,7 @@ bun dev
 - 🎮 **UX Gamificada** - badges, ícones e cores temáticas
 
 ### 🚀 **PRÓXIMAS FEATURES**
-- 📍 **Sistema de Check-in** com QR Codes e geofencing
+- 📍 **Sistema de Check-in Avançado** com QR Codes e geofencing
 - 🛒 **Marketplace Avançado** - parcerias locais e cupons dinâmicos
 - 📱 **PWA (Progressive Web App)** - instalação como app nativo
 - 🔔 **Push Notifications** - lembretes e promoções
@@ -193,6 +221,7 @@ bun dev
 - 🤝 **Sistema de Amizades** - para posts "friends only" e conexões sociais
 - 🤝 **Sistema Social Avançado** - grupos, mentoria e ranking
 - 🎮 **Gamificação Expandida** - ligas, temporadas e eventos especiais
+- 🔐 **Sistema de Permissões Avançado** - roles e hierarquias administrativas
 
 ## 🏗️ Stack Tecnológica
 
@@ -208,6 +237,8 @@ bun dev
 - **BaaS**: Supabase (Auth + Database + Storage)
 - **Queries**: TanStack Query (React Query)
 - **Validação**: Zod + React Hook Form
+- **Segurança**: Row Level Security (RLS) + RPC Functions
+- **Geoespacial**: PostGIS + Funções RPC otimizadas
 
 ### Desenvolvimento
 - **Plataforma**: Lovable + Cursor
@@ -223,7 +254,9 @@ O **Agita** transforma atividades físicas em uma experiência gamificada, onde:
 - 🏆 **Rankings** promovem competição saudável
 - 🛒 **Recompensas reais** podem ser resgatadas
 - 👥 **Conexão social** motiva participação
+- 🎪 **Eventos coletivos** promovem engajamento comunitário
 - 🏛️ **Integração municipal** conecta com políticas públicas
+- 👑 **Sistema administrativo** garante segurança e controle
 
 ## 📱 Plataformas Suportadas
 
@@ -279,6 +312,7 @@ Este projeto está sob a licença [MIT](./LICENSE).
 - **[Tailwind CSS](https://tailwindcss.com)** - Framework CSS
 - **[shadcn/ui](https://ui.shadcn.com)** - Componentes UI
 - **[Mapbox](https://mapbox.com)** - Mapas e geolocalização
+- **[PostGIS](https://postgis.net)** - Extensões geoespaciais para PostgreSQL
 
 ---
 

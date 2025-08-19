@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +9,29 @@ import { useAdminUsers, useAdminToggleAdmin } from "@/hooks/useAdminUsers";
 
 export default function Users() {
   const [search, setSearch] = React.useState("");
-  const { data: users, isLoading, refetch } = useAdminUsers(search);
+  const { data: users, isLoading, error, refetch } = useAdminUsers(search);
   const toggleAdmin = useAdminToggleAdmin();
+
+  if (error) {
+    return (
+      <div className="space-y-6 p-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold text-foreground">Usuários</h2>
+            <p className="text-muted-foreground">Gerencie todos os usuários do sistema</p>
+          </div>
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-destructive">
+              <p>Erro ao carregar usuários: {error.message}</p>
+              <Button onClick={() => refetch()} className="mt-4">Tentar novamente</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 p-4">
@@ -35,44 +57,62 @@ export default function Users() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Admin</TableHead>
-                <TableHead>Nível</TableHead>
-                <TableHead>Atividades</TableHead>
-                <TableHead>SUOR Total</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(users || []).map((u) => (
-                <TableRow key={u.id}>
-                  <TableCell className="font-medium">{u.full_name}</TableCell>
-                  <TableCell>
-                    {u.is_admin ? (
-                      <Badge className="gap-1"><Shield className="h-3 w-3"/> Admin</Badge>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{u.level}</TableCell>
-                  <TableCell>{u.total_activities}</TableCell>
-                  <TableCell className="font-medium">{u.total_suor}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      variant={u.is_admin ? 'destructive' : 'outline'}
-                      onClick={() => toggleAdmin.mutate({ userId: u.id, isAdmin: !u.is_admin })}
-                    >
-                      {u.is_admin ? (<><UserMinus className="h-4 w-4 mr-1"/> Remover Admin</>) : (<><UserPlus className="h-4 w-4 mr-1"/> Tornar Admin</>)}
-                    </Button>
-                  </TableCell>
+          {isLoading ? (
+            <div className="p-6 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-2 text-muted-foreground">Carregando usuários...</p>
+            </div>
+          ) : users && users.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Admin</TableHead>
+                  <TableHead>Nível</TableHead>
+                  <TableHead>Atividades</TableHead>
+                  <TableHead>SUOR Total</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((u) => (
+                  <TableRow key={u.id}>
+                    <TableCell className="font-medium">{u.full_name}</TableCell>
+                    <TableCell>
+                      {u.is_admin ? (
+                        <Badge className="gap-1"><Shield className="h-3 w-3"/> Admin</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{u.level}</TableCell>
+                    <TableCell>{u.total_activities}</TableCell>
+                    <TableCell className="font-medium">{u.total_suor}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant={u.is_admin ? 'destructive' : 'outline'}
+                        onClick={() => toggleAdmin.mutate({ userId: u.id, isAdmin: !u.is_admin })}
+                        disabled={toggleAdmin.isPending}
+                      >
+                        {toggleAdmin.isPending ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-1"></div>
+                        ) : u.is_admin ? (
+                          <><UserMinus className="h-4 w-4 mr-1"/> Remover Admin</>
+                        ) : (
+                          <><UserPlus className="h-4 w-4 mr-1"/> Tornar Admin</>
+                        )}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="p-6 text-center text-muted-foreground">
+              <p>Nenhum usuário encontrado.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

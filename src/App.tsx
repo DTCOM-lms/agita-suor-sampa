@@ -22,7 +22,7 @@ import AdminRoute from "@/components/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import Races from "./pages/admin/Races";
-import Events from "./pages/admin/Events";
+import AdminEvents from "./pages/admin/Events";
 import Suor from "./pages/admin/Suor";
 import Challenges from "./pages/admin/Challenges";
 import Partners from "./pages/admin/Partners";
@@ -43,6 +43,7 @@ import Store from "./pages/Store";
 import Rewards from "./pages/admin/Rewards";
 import Profile from "./pages/Profile";
 import Social from "./pages/Social";
+import Events from "./pages/Events";
 
 const queryClient = new QueryClient();
 
@@ -150,6 +151,11 @@ const App = () => (
                     <Social />
                   </ProtectedRoute>
                 } />
+                <Route path="/events" element={
+                  <ProtectedRoute>
+                    <Events />
+                  </ProtectedRoute>
+                } />
             
             {/* Protected Admin Routes - Require authentication */}
             <Route path="/admin" element={
@@ -183,7 +189,7 @@ const App = () => (
             <Route path="/admin/events" element={
               <ProtectedRoute>
                 <AdminRoute>
-                  <AdminLayout><Events /></AdminLayout>
+                  <AdminLayout><AdminEvents /></AdminLayout>
                 </AdminRoute>
               </ProtectedRoute>
             } />

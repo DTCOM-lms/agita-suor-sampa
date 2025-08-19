@@ -57,7 +57,7 @@ export function AdminSidebar() {
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
+          <SidebarGroupLabel className="sidebar-label-text">
             Administração
           </SidebarGroupLabel>
           
